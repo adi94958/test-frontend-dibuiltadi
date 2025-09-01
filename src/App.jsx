@@ -1,9 +1,17 @@
-function App() {
+import React, { Suspense } from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+
+const Pages = React.lazy(() => import("./pages"));
+
+export default function App() {
   return (
-    <>
-      <div className="bg-slate-500">Hello</div>
-    </>
+    <Router>
+      <AuthProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Pages />
+        </Suspense>
+      </AuthProvider>
+    </Router>
   );
 }
-
-export default App;
