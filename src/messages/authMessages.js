@@ -1,21 +1,35 @@
-export const authMessages = {
-  // Success Messages
-  LOGIN_SUCCESS_DEFAULT_MESSAGE: "Login berhasil!",
-  REGISTER_SUCCESS_DEFAULT_MESSAGE: "Registrasi berhasil!",
-  LOGOUT_SUCCESS_DEFAULT_MESSAGE: "Logout berhasil!",
-  PASSWORD_UPDATE_SUCCESS_MESSAGE: "Password berhasil diperbarui!",
-  
-  // Error Messages
-  LOGIN_FAILED_DEFAULT_MESSAGE: "Username atau password salah.",
-  REGISTER_FAILED_DEFAULT_MESSAGE: "Registrasi gagal. Silakan coba lagi.",
-  ERROR_DEFAULT_MESSAGE: "Terjadi kesalahan. Silakan coba lagi.",
-  NETWORK_ERROR_MESSAGE: "Koneksi bermasalah. Periksa koneksi internet Anda.",
-  VALIDATION_ERROR_MESSAGE: "Data yang dimasukkan tidak valid.",
-  
-  // Validation Messages
-  REQUIRED_FIELD_MESSAGE: "Field ini wajib diisi.",
-  INVALID_EMAIL_MESSAGE: "Format email tidak valid.",
-  INVALID_PHONE_MESSAGE: "Format nomor telepon tidak valid.",
-  PASSWORD_MIN_LENGTH_MESSAGE: "Password minimal 6 karakter.",
-  PASSWORD_CONFIRMATION_MESSAGE: "Konfirmasi password tidak cocok."
+const messages = {
+  name: {
+    required: "Nama wajib diisi",
+    minLength: "Nama minimal 3 karakter",
+    maxLength: "Nama maksimal 50 karakter",
+  },
+
+  email: {
+    required: "Email wajib diisi",
+    invalid: "Format email tidak valid",
+    minLength: "Email minimal 3 karakter",
+    maxLength: "Email maksimal 50 karakter",
+  },
+
+  phone: {
+    digitsOnly: "Nomor telepon hanya boleh berisi angka",
+    required: "Nomor telepon wajib diisi",
+    minLength: "Nomor telepon minimal 7 karakter",
+    maxLength: "Nomor telepon maksimal 20 karakter",
+  },
+
+  address: {
+    required: "Alamat wajib diisi",
+    minLength: "Alamat minimal 3 karakter",
+    maxLength: "Alamat maksimal 50 karakter",
+  },
+
+  password: {
+    required: "Kata sandi wajib diisi",
+    minLength: "Kata sandi minimal 8 karakter",
+    maxLength: "Kata sandi maksimal 50 karakter",
+  },
 };
+
+export default messages;

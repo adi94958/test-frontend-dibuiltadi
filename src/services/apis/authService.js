@@ -6,7 +6,10 @@ export const authService = {
   // Register
   register: async (userData) => {
     try {
-      const response = await axiosInstance.post("/api/v1/auth/register", userData);
+      const response = await axiosInstance.post(
+        "/api/v1/auth/register",
+        userData
+      );
       return handleApiResponse(response);
     } catch (error) {
       handleApiError(error);
@@ -49,7 +52,10 @@ export const authService = {
   // Update Password
   updatePassword: async (passwordData) => {
     try {
-      const response = await axiosInstance.put("/api/v1/auth/password", passwordData);
+      const response = await axiosInstance.put(
+        "/api/v1/auth/password",
+        passwordData
+      );
       return handleApiResponse(response);
     } catch (error) {
       handleApiError(error);
@@ -63,10 +69,3 @@ export const loginUser = authService.login;
 export const logoutUser = authService.logout;
 export const getUserProfile = authService.getProfile;
 export const updateUserPassword = authService.updatePassword;
-
-// Individual export functions for backward compatibility
-export const register = authService.register;
-export const login = authService.login;
-export const logout = authService.logout;
-export const getProfile = authService.getProfile;
-export const updatePassword = authService.updatePassword;

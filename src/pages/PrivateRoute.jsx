@@ -8,7 +8,7 @@ const PrivateRoute = ({ children, isAuthenticated, loading }) => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Loading size="large" text="Checking authentication..." />
+        <Loading size="large" />
       </div>
     );
   }

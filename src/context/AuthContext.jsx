@@ -1,12 +1,15 @@
-// AuthContext.jsx
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login as authLogin, logoutUser, getProfile } from "../redux/slices/authSlice";
+import {
+  login as authLogin,
+  logoutUser,
+  getProfile,
+} from "../redux/slices/authSlice";
+import { registerUser } from "../services/apis/authService";
 import Swal from "sweetalert2";
 import { jwtDecode } from "jwt-decode";
 import { authConstants } from "../constants/authConstants";
-import { authMessages } from "../messages/authMessages";
 import { API_STATUS_CODES } from "../constants/apiConstants";
 import { AuthContext } from "./AuthContextProvider";
 
@@ -49,10 +52,13 @@ export const AuthProvider = ({ children }) => {
       handleUnauthorizedLogout();
     };
 
-    window.addEventListener('unauthorized-access', handleUnauthorizedEvent);
-    
+    window.addEventListener("unauthorized-access", handleUnauthorizedEvent);
+
     return () => {
-      window.removeEventListener('unauthorized-access', handleUnauthorizedEvent);
+      window.removeEventListener(
+        "unauthorized-access",
+        handleUnauthorizedEvent
+      );
     };
   }, [handleUnauthorizedLogout]);
 
@@ -79,44 +85,88 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, [dispatch]);
 
+  // Fungsi register
+  const register = async (name, phone, email, address, password) => {
+    try {
+      const userData = { name, phone, email, address, password };
+      const result = await registerUser(userData);
+
+      if (result.status === API_STATUS_CODES.SUCCESS) {
+        Swal.fire({
+          title: "Registration Success!",
+          text:
+            result.message ||
+            "Account created successfully. Please login to continue.",
+          icon: authConstants.ICON_SUCCESS,
+          confirmButtonText: authConstants.CONFIRM_BUTTON_TEXT_SUCCESS,
+        }).then(() => {
+          navigate("/login");
+        });
+      } else {
+        throw new Error(result.message || "Registration failed");
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Registration failed. Please try again.";
+
+      Swal.fire({
+        title: "Registration Failed",
+        text: errorMessage,
+        icon: authConstants.ICON_ERROR,
+        confirmButtonText: authConstants.CONFIRM_BUTTON_TEXT_ERROR,
+      });
+
+      throw error;
+    }
+  };
+
   // Fungsi login
   const login = async (phone, password) => {
     try {
       const result = await dispatch(authLogin({ phone, password }));
-      
+
       if (authLogin.fulfilled.match(result)) {
         if (result.payload.status === API_STATUS_CODES.SUCCESS) {
           const userData = result.payload.user || { phone };
-          
+
           setIsAuthenticated(true);
           setUser(userData);
 
           Swal.fire({
             title: authConstants.LOGIN_SUCCESS_TITLE,
-            text: result.payload.message || authMessages.LOGIN_SUCCESS_DEFAULT_MESSAGE,
+            text:
+              result.payload.message ||
+              authConstants.LOGIN_SUCCESS_DEFAULT_MESSAGE,
             icon: authConstants.ICON_SUCCESS,
             confirmButtonText: authConstants.CONFIRM_BUTTON_TEXT_SUCCESS,
           }).then(() => {
             navigate("/");
           });
         } else {
-          throw new Error(result.payload.message || authMessages.LOGIN_FAILED_DEFAULT_MESSAGE);
+          throw new Error(
+            result.payload.message || authConstants.LOGIN_FAILED_DEFAULT_MESSAGE
+          );
         }
       } else {
-        throw new Error(result.payload?.message || authMessages.LOGIN_FAILED_DEFAULT_MESSAGE);
+        throw new Error(
+          result.payload?.message || authConstants.LOGIN_FAILED_DEFAULT_MESSAGE
+        );
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          authMessages.ERROR_DEFAULT_MESSAGE;
-      
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        authConstants.ERROR_DEFAULT_MESSAGE;
+
       Swal.fire({
         title: authConstants.LOGIN_FAILED_TITLE,
         text: errorMessage,
         icon: authConstants.ICON_ERROR,
         confirmButtonText: authConstants.CONFIRM_BUTTON_TEXT_ERROR,
       });
-      
+
       throw error;
     }
   };
@@ -135,12 +185,12 @@ export const AuthProvider = ({ children }) => {
       if (result.isConfirmed) {
         // Dispatch logout action
         dispatch(logoutUser());
-        
+
         localStorage.removeItem(authConstants.TOKEN_KEY);
         localStorage.removeItem(authConstants.USER_KEY);
         setIsAuthenticated(false);
         setUser(null);
-        
+
         Swal.fire({
           title: authConstants.LOGOUT_SUCCESS_TITLE,
           text: authConstants.LOGOUT_SUCCESS_TEXT,
@@ -160,6 +210,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         login,
+        register,
         logout,
         handleUnauthorizedLogout,
       }}
