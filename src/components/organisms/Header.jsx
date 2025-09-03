@@ -73,7 +73,7 @@ const Header = memo(() => {
 
   return (
     <header 
-      className={`fixed top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-4 py-3 md:px-6 md:py-4 transition-all duration-300 ease-in-out ${
+      className={`fixed top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-4 py-3 md:px-6 md:py-4 ${
         isCollapsed ? "lg:left-16" : "lg:left-64"
       } right-0`}
     >
