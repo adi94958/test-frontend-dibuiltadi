@@ -184,8 +184,6 @@ export const AuthProvider = ({ children }) => {
         icon: authConstants.ICON_ERROR,
         confirmButtonText: authConstants.CONFIRM_BUTTON_TEXT_ERROR,
       });
-
-      throw error;
     }
   };
 

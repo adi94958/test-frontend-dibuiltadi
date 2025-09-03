@@ -1,16 +1,12 @@
 import { Header } from "../../components/organisms";
 import { ProfileAvatar } from "../../components/molecules";
 import { Button } from "../../components/molecules";
-import { PencilIcon, CameraIcon } from "@heroicons/react/24/outline";
+import { CameraIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 
 const ProfilePage = () => {
   // Get user data from auth state
   const { user } = useSelector((state) => state.auth);
-
-  const handleEditProfile = () => {
-    console.log("Edit profile");
-  };
 
   const handleChangePhoto = () => {
     console.log("Change profile photo");
@@ -44,25 +40,16 @@ const ProfilePage = () => {
 
               {/* User Info */}
               <div className="flex-1">
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                      {user?.name || "User"}
-                    </h1>
-                    <p className="text-gray-600 mt-1">
-                      {user?.roleName || "Role"} • {user?.code || "Code"}
-                    </p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Role Code: {user?.roleCode || "-"}
-                    </p>
-                  </div>
-                  <Button
-                    onClick={handleEditProfile}
-                    className="mt-4 md:mt-0 inline-flex items-center"
-                  >
-                    <PencilIcon className="w-4 h-4 mr-2" />
-                    Edit Profile
-                  </Button>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {user?.name || "User"}
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    {user?.roleName || "Role"} • {user?.code || "Code"}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Role Code: {user?.roleCode || "-"}
+                  </p>
                 </div>
 
                 {/* Bio/Description */}

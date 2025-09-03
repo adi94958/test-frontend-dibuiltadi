@@ -9,9 +9,8 @@ const ProfileAvatar = ({
   onClick = null,
 }) => {
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
 
-  // Size configurations - lebih sederhana
+  // Size configurations
   const sizes = {
     xs: "w-6 h-6",
     sm: "w-8 h-8",
@@ -30,29 +29,6 @@ const ProfileAvatar = ({
     "2xl": "w-10 h-10",
   };
 
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
-
-  const handleImageError = () => {
-    setImageError(true);
-    setImageLoading(false);
-  };
-
-  // Base classes
-  const baseClasses = `
-    ${sizes[size]} 
-    rounded-full 
-    object-cover 
-    border-2 border-gray-200
-    ${
-      onClick
-        ? "cursor-pointer hover:border-gray-300 transition-all duration-200"
-        : ""
-    }
-    ${className}
-  `;
-
   // Jika tidak ada gambar atau error, tampilkan fallback
   if (!profileImage || imageError) {
     return (
@@ -63,11 +39,7 @@ const ProfileAvatar = ({
           bg-gradient-to-br from-blue-400 to-blue-600 
           flex items-center justify-center
           border-2 border-gray-200
-          ${
-            onClick
-              ? "cursor-pointer hover:border-gray-300 transition-all duration-200"
-              : ""
-          }
+          ${onClick ? "cursor-pointer hover:border-gray-300" : ""}
           ${className}
         `}
         onClick={onClick}
@@ -79,37 +51,21 @@ const ProfileAvatar = ({
   }
 
   return (
-    <div className="relative">
-      {/* Loading placeholder */}
-      {imageLoading && (
-        <div
-          className={`
-          ${sizes[size]} 
-          rounded-full 
-          bg-gray-200 
-          animate-pulse 
-          flex items-center justify-center
-          border-2 border-gray-200
-        `}
-        >
-          <UserIcon className={`${iconSizes[size]} text-gray-400`} />
-        </div>
-      )}
-
-      {/* Actual image */}
-      <img
-        src={profileImage}
-        alt={name || "Profile"}
-        className={`
-          ${baseClasses}
-          ${imageLoading ? "absolute inset-0 opacity-0" : "opacity-100"}
-        `}
-        onLoad={handleImageLoad}
-        onError={handleImageError}
-        onClick={onClick}
-        title={name || "Profile"}
-      />
-    </div>
+    <img
+      src={profileImage}
+      alt={name || "Profile"}
+      className={`
+        ${sizes[size]} 
+        rounded-full 
+        object-cover 
+        border-2 border-gray-200
+        ${onClick ? "cursor-pointer hover:border-gray-300" : ""}
+        ${className}
+      `}
+      onError={() => setImageError(true)}
+      onClick={onClick}
+      title={name || "Profile"}
+    />
   );
 };
 

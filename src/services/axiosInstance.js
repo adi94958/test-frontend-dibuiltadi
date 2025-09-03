@@ -4,6 +4,7 @@ import { API_STATUS_CODES, isErrorResponse } from "../constants/apiConstants";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_URL || "https://sandbox.dibuiltadi.com",
+  timeout: 60000, // 60 seconds
 });
 
 // Request Interceptor
@@ -17,11 +18,11 @@ axiosInstance.interceptors.request.use(
       config.headers["Content-Type"] = "application/json";
     }
 
-    // Ambil token dari localStorage (sudah dengan Bearer prefix)
+    // Ambil token dari localStorage
     const token = localStorage.getItem("accessToken");
     if (token) {
-      // Token sudah termasuk Bearer prefix dari authSlice
-      config.headers.Authorization = token;
+      // Tambahkan Bearer prefix jika belum ada
+      config.headers.Authorization = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
     }
 
     return config;
@@ -52,14 +53,22 @@ axiosInstance.interceptors.response.use(
     // Check for custom status codes
     const customStatus = error.response?.data?.status || error.response?.status;
     
-    // Handle unauthorized access
+    // Handle unauthorized access - tapi jangan terlalu agresif
     if (customStatus === API_STATUS_CODES.UNAUTHORIZED || error.response?.status === 401) {
-      // Clear localStorage
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("userData");
+      // Hanya clear token jika benar-benar unauthorized (bukan error sementara)
+      const isRealUnauthorized = 
+        error.response?.data?.responseCode === '40100' || // Custom unauthorized code
+        error.response?.data?.message?.toLowerCase().includes('unauthorized') ||
+        error.response?.data?.message?.toLowerCase().includes('token');
       
-      // Trigger logout (will be handled by AuthContext)
-      window.dispatchEvent(new CustomEvent('unauthorized-access'));
+      if (isRealUnauthorized) {
+        // Clear localStorage
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userData");
+        
+        // Trigger logout (will be handled by AuthContext)
+        window.dispatchEvent(new CustomEvent('unauthorized-access'));
+      }
     }
 
     return Promise.reject(error);

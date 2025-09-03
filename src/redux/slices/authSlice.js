@@ -6,10 +6,28 @@ const getToken = () => localStorage.getItem("accessToken");
 const setToken = (token) => localStorage.setItem("accessToken", token);
 const removeToken = () => localStorage.removeItem("accessToken");
 
+// Helper untuk user data
+const getUserData = () => {
+  try {
+    const userData = localStorage.getItem("userData");
+    return userData ? JSON.parse(userData) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setUserData = (userData) => {
+  localStorage.setItem("userData", JSON.stringify(userData));
+};
+
+const removeUserData = () => {
+  localStorage.removeItem("userData");
+};
+
 const initialState = {
   isAuthenticated: !!getToken(),
   token: getToken() || null,
-  user: null,
+  user: getUserData(), // Load user dari localStorage
   loading: false,
   error: null,
   updateError: null,
@@ -54,6 +72,20 @@ export const login = createAsyncThunk(
       if (responseCode === API_STATUS_CODES.SUCCESS && response.accessToken) {
         // Save to localStorage
         setToken(response.accessToken);
+        
+        // Prepare user data
+        const userData = {
+          code: response.code,
+          name: response.name,
+          phone: response.phone,
+          email: response.email,
+          profileImage: response.profileImage,
+          roleCode: response.roleCode,
+          roleName: response.roleName,
+        };
+        
+        // Save user data to localStorage
+        setUserData(userData);
 
         return response;
       } else {
@@ -93,7 +125,25 @@ export const getProfile = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await authService.getProfile();
-      return response.data;
+      
+      // Handle backend response format
+      const responseCode = parseInt(response.responseCode);
+      if (responseCode === API_STATUS_CODES.SUCCESS) {
+        // Return the user data from the response
+        return {
+          code: response.code || response.data?.code,
+          name: response.name || response.data?.name,
+          phone: response.phone || response.data?.phone,
+          email: response.email || response.data?.email,
+          profileImage: response.profileImage || response.data?.profileImage,
+          roleCode: response.roleCode || response.data?.roleCode,
+          roleName: response.roleName || response.data?.roleName,
+        };
+      } else {
+        return rejectWithValue(
+          response.responseMessage || "Failed to fetch profile"
+        );
+      }
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -130,6 +180,7 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
       removeToken();
+      removeUserData(); // Hapus user data juga
     },
     setCredentials(state, action) {
       state.isAuthenticated = true;
@@ -188,6 +239,7 @@ const authSlice = createSlice({
         state.token = null;
         state.user = null;
         state.loading = false;
+        removeUserData(); // Hapus user data
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.isAuthenticated = false;
@@ -195,12 +247,15 @@ const authSlice = createSlice({
         state.user = null;
         state.loading = false;
         state.error = action.payload;
+        removeUserData(); // Hapus user data
       })
       .addCase(getProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getProfile.fulfilled, (state) => {
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+        setUserData(action.payload); // Save fresh data to localStorage
         state.loading = false;
       })
       .addCase(getProfile.rejected, (state, action) => {
