@@ -2,21 +2,14 @@ import { Header } from "../../components/organisms";
 import { Avatar } from "../../components/molecules";
 import { Button } from "../../components/molecules";
 import { CameraIcon } from "@heroicons/react/24/outline";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { getProfile } from "../../redux/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const ProfilePage = () => {
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
   const handleChangePhoto = () => {
     console.log("Change profile photo");
   };
-
-  useEffect(() => {
-    dispatch(getProfile());
-  }, [dispatch]);
 
   return (
     <div className="min-h-screen bg-gray-50">

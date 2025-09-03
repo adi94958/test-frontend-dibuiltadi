@@ -1,8 +1,7 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Loading from "../components/atoms/Loading";
-import { getProfile } from "../redux/slices/authSlice";
 import { Sidebar, Header } from "../components/organisms";
 
 // Lazy loading
@@ -17,17 +16,9 @@ const Register = lazy(() => import("./Auth/Register"));
 const PrivateRoute = lazy(() => import("./PrivateRoute"));
 
 const Pages = () => {
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const isCollapsed = useSelector((state) => state.sidebar.isCollapsed);
   const location = useLocation();
-  const dispatch = useDispatch();
-
-  // Fetch profile hanya jika authenticated dan belum ada user data
-  useEffect(() => {
-    if (isAuthenticated && !user) {
-      dispatch(getProfile());
-    }
-  }, [dispatch, isAuthenticated, user]);
 
   const isPublicRoute =
     location.pathname === "/login" || location.pathname === "/register";
@@ -54,8 +45,8 @@ const Pages = () => {
             ${
               !isPublicRoute && isAuthenticated
                 ? isCollapsed
-                  ? "lg:ml-16"
-                  : "lg:ml-64"
+                  ? "lg:ml-16 pt-16"
+                  : "lg:ml-64 pt-16"
                 : "ml-0"
             }
           `}

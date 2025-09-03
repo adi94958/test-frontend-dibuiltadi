@@ -17,6 +17,7 @@ const Header = memo(() => {
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
+  const isCollapsed = useSelector((state) => state.sidebar.isCollapsed);
   const handleProfileClick = useCallback(() => {
     setIsDropdownOpen((prev) => !prev);
   }, []);
@@ -71,7 +72,11 @@ const Header = memo(() => {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 md:px-6 md:py-4">
+    <header 
+      className={`fixed top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-4 py-3 md:px-6 md:py-4 transition-all duration-300 ease-in-out ${
+        isCollapsed ? "lg:left-16" : "lg:left-64"
+      } right-0`}
+    >
       <div className="flex items-center justify-end">
         <div className="flex items-center space-x-3">
           <div className="text-right">
