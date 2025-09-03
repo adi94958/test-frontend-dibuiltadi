@@ -1,48 +1,36 @@
 import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContextProvider";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/atoms/Loading";
 import { getProfile } from "../redux/slices/authSlice";
+import { Sidebar, Header } from "../components/organisms";
 
-// Lazy loading untuk komponen
+// Lazy loading
 const Customer = lazy(() => import("./Customer"));
 const DetailCustomer = lazy(() => import("./Customer/DetailCustomer"));
 const Dashboard = lazy(() => import("./Summary"));
 const Transaction = lazy(() => import("./Transaction"));
 const DetailSummary = lazy(() => import("./Transaction/DetailTransaction"));
 const Profile = lazy(() => import("./Profile"));
-
-// Auth component (Login/Register)
 const Login = lazy(() => import("./Auth/Login"));
 const Register = lazy(() => import("./Auth/Register"));
-
-// Private Route component
 const PrivateRoute = lazy(() => import("./PrivateRoute"));
 
-// Navigation components
-const Header = lazy(() => import("../components/organisms/Header"));
-const Sidebar = lazy(() => import("../components/organisms/Sidebar"));
-
 const Pages = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const isCollapsed = useSelector((state) => state.sidebar.isCollapsed);
   const location = useLocation();
   const dispatch = useDispatch();
 
+  // Fetch profile hanya jika authenticated dan belum ada user data
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !user) {
       dispatch(getProfile());
     }
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, isAuthenticated, user]);
 
   const isPublicRoute =
     location.pathname === "/login" || location.pathname === "/register";
-
-  // Jika masih dalam proses loading, tampilkan spinner
-  if (loading) {
-    return <Loading centered={true} size="lg" />;
-  }
 
   // Redirect ke dashboard jika pengguna sudah login dan mencoba mengakses halaman login
   if (isAuthenticated && isPublicRoute) {
@@ -51,18 +39,17 @@ const Pages = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Suspense fallback={<Loading centered={true} size="lg" />}>
-        {/* Sidebar */}
-        {isAuthenticated && !isPublicRoute && (
-          <>
-            <Sidebar />
-            <Header />
-          </>
-        )}
+      {/* Sidebar dan Header */}
+      {isAuthenticated && !isPublicRoute && (
+        <>
+          <Sidebar />
+          <Header />
+        </>
+      )}
 
-        {/* Main Content */}
-        <div
-          className={`
+      {/* Main Content */}
+      <div
+        className={`
             min-h-screen transition-all duration-300 ease-in-out
             ${
               !isPublicRoute && isAuthenticated
@@ -72,93 +59,74 @@ const Pages = () => {
                 : "ml-0"
             }
           `}
-        >
-          <>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+      >
+        <Suspense fallback={<Loading centered={true} size="lg" />}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-              {/* Private Routes */}
-              <Route
-                path="/"
-                element={
-                  <PrivateRoute
-                    isAuthenticated={isAuthenticated}
-                    loading={loading}
-                  >
-                    <Dashboard />
-                  </PrivateRoute>
-                }
-              />
+            {/* Private Routes - Hapus loading prop yang bikin issue */}
+            <Route
+              path="/"
+              element={
+                <PrivateRoute isAuthenticated={isAuthenticated}>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
 
-              {/* Customer Routes */}
-              <Route
-                path="/customers"
-                element={
-                  <PrivateRoute
-                    isAuthenticated={isAuthenticated}
-                    loading={loading}
-                  >
-                    <Customer />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/customers/:code"
-                element={
-                  <PrivateRoute
-                    isAuthenticated={isAuthenticated}
-                    loading={loading}
-                  >
-                    <DetailCustomer />
-                  </PrivateRoute>
-                }
-              />
+            {/* Customer Routes */}
+            <Route
+              path="/customers"
+              element={
+                <PrivateRoute isAuthenticated={isAuthenticated}>
+                  <Customer />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/customers/:code"
+              element={
+                <PrivateRoute isAuthenticated={isAuthenticated}>
+                  <DetailCustomer />
+                </PrivateRoute>
+              }
+            />
 
-              {/* Transaction Routes */}
-              <Route
-                path="/transactions"
-                element={
-                  <PrivateRoute
-                    isAuthenticated={isAuthenticated}
-                    loading={loading}
-                  >
-                    <Transaction />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/transactions/:referenceNo"
-                element={
-                  <PrivateRoute
-                    isAuthenticated={isAuthenticated}
-                    loading={loading}
-                  >
-                    <DetailSummary />
-                  </PrivateRoute>
-                }
-              />
+            {/* Transaction Routes */}
+            <Route
+              path="/transactions"
+              element={
+                <PrivateRoute isAuthenticated={isAuthenticated}>
+                  <Transaction />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/transactions/:referenceNo"
+              element={
+                <PrivateRoute isAuthenticated={isAuthenticated}>
+                  <DetailSummary />
+                </PrivateRoute>
+              }
+            />
 
-              {/* Profile Route */}
-              <Route
-                path="/profile"
-                element={
-                  <PrivateRoute
-                    isAuthenticated={isAuthenticated}
-                    loading={loading}
-                  >
-                    <Profile />
-                  </PrivateRoute>
-                }
-              />
+            {/* Profile Route */}
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute isAuthenticated={isAuthenticated}>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
 
-              {/* Catch-all Route */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </>
-        </div>
-      </Suspense>
+            {/* Catch-all Route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </div>
     </div>
   );
 };

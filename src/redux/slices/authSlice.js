@@ -5,7 +5,6 @@ const getToken = () => localStorage.getItem("accessToken");
 const setToken = (token) => localStorage.setItem("accessToken", token);
 const removeToken = () => localStorage.removeItem("accessToken");
 
-// Helper untuk user data - PRE-LOAD untuk avoid delay
 const getUserData = () => {
   try {
     const userData = localStorage.getItem("userData");
@@ -26,8 +25,8 @@ const removeUserData = () => {
 const initialState = {
   isAuthenticated: !!getToken(),
   token: getToken() || null,
-  user: getUserData(), // PRE-LOAD user data untuk instant display
-  loading: false, // No loading by default untuk instant UI
+  user: getUserData(),
+  loading: false,
   error: null,
   updateError: null,
   updateSuccess: false,
@@ -137,7 +136,7 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
       removeToken();
-      removeUserData(); // Hapus user data dari localStorage
+      removeUserData();
     },
     setCredentials(state, action) {
       state.isAuthenticated = true;
@@ -172,7 +171,6 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.token = action.payload.accessToken;
 
-        // Simpan user data ke state dan localStorage untuk instant display
         const userData = {
           code: action.payload.code,
           name: action.payload.name,
@@ -183,7 +181,7 @@ const authSlice = createSlice({
           roleName: action.payload.roleName,
         };
         state.user = userData;
-        setUserData(userData); // Persist untuk instant load next time
+        setUserData(userData);
 
         state.loading = false;
         state.error = null;

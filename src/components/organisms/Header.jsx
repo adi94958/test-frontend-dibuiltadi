@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar } from "../molecules";
 import { Text } from "../atoms";
-import { logoutUser } from "../../redux/slices/authSlice";
+import { logout } from "../../redux/slices/authSlice";
+import Swal from "sweetalert2";
 import {
   UserIcon,
   ArrowRightOnRectangleIcon,
@@ -27,8 +28,33 @@ const Header = memo(() => {
 
   const handleLogout = useCallback(() => {
     setIsDropdownOpen(false);
-    dispatch(logoutUser());
-  }, [dispatch]);
+
+    // SweetAlert confirmation
+    Swal.fire({
+      title: "Logout Confirmation",
+      text: "Are you sure you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, logout",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Dispatch Redux logout
+        dispatch(logout());
+
+        Swal.fire({
+          title: "Logout Success",
+          text: "You have been logged out successfully",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          navigate("/login");
+        });
+      }
+    });
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

@@ -1,13 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { Loading, Text } from "../../components/atoms";
 import { Button, TextInput } from "../../components/molecules";
-import { useAuth } from "../../context/AuthContextProvider";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/slices/authSlice";
 import { loginSchema } from "../../validation/authValidation";
 import { useFormik } from "formik";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +23,25 @@ const LoginPage = () => {
     onSubmit: async (values) => {
       setIsLoading(true);
       try {
-        await login(values.phone, values.password);
+        const result = await dispatch(
+          login({
+            phone: values.phone,
+            password: values.password,
+          })
+        );
+
+        if (login.fulfilled.match(result)) {
+          Swal.fire({
+            title: "Login Success!",
+            text: "Welcome back!",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then(() => {
+            navigate("/");
+          });
+        }
+      } catch (error) {
+        console.error("Login error:", error);
       } finally {
         setIsLoading(false);
       }

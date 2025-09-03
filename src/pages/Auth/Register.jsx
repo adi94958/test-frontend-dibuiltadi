@@ -1,13 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { Loading, Text } from "../../components/atoms";
 import { Button, TextInput } from "../../components/molecules";
-import { useAuth } from "../../context/AuthContextProvider";
+import { useDispatch } from "react-redux";
+import { register } from "../../redux/slices/authSlice";
 import { registerSchema } from "../../validation/authValidation";
 import { useFormik } from "formik";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const RegisterPage = () => {
-  const { register } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,13 +26,28 @@ const RegisterPage = () => {
     onSubmit: async (values) => {
       setIsLoading(true);
       try {
-        await register(
-          values.name,
-          values.phone,
-          values.email,
-          values.address,
-          values.password
+        const result = await dispatch(
+          register({
+            name: values.name,
+            phone: values.phone,
+            email: values.email,
+            address: values.address,
+            password: values.password,
+          })
         );
+
+        if (register.fulfilled.match(result)) {
+          Swal.fire({
+            title: "Registration Success!",
+            text: "Account created successfully. Please login to continue.",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then(() => {
+            navigate("/login");
+          });
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
       } finally {
         setIsLoading(false);
       }
