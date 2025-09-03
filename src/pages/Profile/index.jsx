@@ -1,24 +1,112 @@
-import { Header } from "../../components/organisms";
-import { Avatar } from "../../components/molecules";
+import { Avatar, TextInput } from "../../components/molecules";
 import { Button } from "../../components/molecules";
-import { CameraIcon } from "@heroicons/react/24/outline";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { Text } from "../../components/atoms";
+import Modal from "../../components/molecules/Modal";
+import { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import { changePasswordSchema } from "../../validation/authValidation";
+import {
+  updatePassword,
+  clearUpdateError,
+  clearUpdateSuccess,
+} from "../../redux/slices/authSlice";
+import Swal from "sweetalert2";
 
 const ProfilePage = () => {
-  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { user, loading, error, updateSuccess, updateError, message } =
+    useSelector((state) => state.auth);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleChangePhoto = () => {
-    console.log("Change profile photo");
+  // Setup formik untuk change password
+  const formik = useFormik({
+    initialValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+    validationSchema: changePasswordSchema,
+    onSubmit: async (values) => {
+      dispatch(
+        updatePassword({
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+          newPasswordConfirmation: values.confirmPassword,
+        })
+      );
+    },
+  });
+
+  useEffect(() => {
+    if (updateSuccess) {
+      Swal.fire({
+        title: "Success!",
+        text: message,
+        icon: "success",
+        confirmButtonText: "OK",
+      }).then(() => {
+        setIsModalOpen(false);
+        formik.resetForm();
+        dispatch(clearUpdateSuccess());
+      });
+    }
+  }, [updateSuccess, message, dispatch, formik]);
+
+  useEffect(() => {
+    if (updateError) {
+      const messError = [
+        error?.currentPassword,
+        error?.newPassword,
+        error?.confirmPassword,
+      ].filter(Boolean);
+
+      Swal.fire({
+        title: message,
+        text: messError.join("\n"),
+        icon: "error",
+        confirmButtonText: "OK",
+      }).then(() => {
+        formik.resetForm();
+        dispatch(clearUpdateError());
+      });
+    }
+  }, [updateError, error, message, dispatch, formik]);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    formik.resetForm();
+    dispatch(clearUpdateError());
+  };
+
+  // Handle submit dengan validasi
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const errors = await formik.validateForm();
+    formik.setTouched(
+      {
+        currentPassword: true,
+        newPassword: true,
+        confirmPassword: true,
+      },
+      false
+    );
+
+    // Submit jika tidak ada error
+    if (Object.keys(errors).length === 0) {
+      formik.handleSubmit(e);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Profile Content */}
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="w-full mx-auto p-6">
         {/* Profile Header Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex mb-6 flex-col sm:flex-row justify-between">
           <div className="p-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
+            <div className="flex flex-row items-center space-y-0 space-x-6">
               {/* Profile Avatar */}
               <div className="relative">
                 <Avatar
@@ -26,39 +114,25 @@ const ProfilePage = () => {
                   name={user?.name || "User"}
                   size="2xl"
                 />
-                <button
-                  onClick={handleChangePhoto}
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors duration-200"
-                >
-                  <CameraIcon className="w-4 h-4" />
-                </button>
               </div>
 
               {/* User Info */}
               <div className="flex-1">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {user?.name || "User"}
-                  </h1>
-                  <p className="text-gray-600 mt-1">
-                    {user?.roleName || "Role"} • {user?.code || "Code"}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Role Code: {user?.roleCode || "-"}
-                  </p>
-                </div>
-
-                {/* Bio/Description */}
-                <div className="mt-4">
-                  <p className="text-gray-700">
-                    {user?.email
-                      ? `Contact: ${user.email}`
-                      : "No additional information available."}
-                    {user?.phone && ` | Phone: ${user.phone}`}
-                  </p>
+                  <Text variant="subheading">{user?.name}</Text>
+                  <Text variant="caption">{user?.roleName}</Text>
                 </div>
               </div>
             </div>
+          </div>
+          <div className="flex justify-end items-center p-6">
+            <Button
+              variant="outline"
+              className="justify-center w-full sm:w-auto"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Change Password
+            </Button>
           </div>
         </div>
 
@@ -119,48 +193,78 @@ const ProfilePage = () => {
                 </label>
                 <p className="text-gray-900">{user?.roleCode || "-"}</p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Access Level
-                </label>
-                <p className="text-gray-900">
-                  {user?.roleCode === "ADM"
-                    ? "Administrator"
-                    : user?.roleCode === "USR"
-                    ? "User"
-                    : user?.roleName || "Standard User"}
-                </p>
-              </div>
             </div>
           </div>
-        </div>
 
-        {/* Account Settings */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-6">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Account Settings
-            </h2>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button variant="outline" className="justify-center">
-                Change Password
-              </Button>
-              <Button variant="outline" className="justify-center">
-                Privacy Settings
-              </Button>
-              <Button variant="outline" className="justify-center">
-                Notification Settings
-              </Button>
-              <Button
-                variant="outline"
-                className="justify-center text-red-600 border-red-200 hover:bg-red-50"
-              >
-                Deactivate Account
-              </Button>
-            </div>
-          </div>
+          {/* Modal Changes Password with Nested Components */}
+          {isModalOpen && (
+            <Modal.Backdrop onClick={handleCloseModal}>
+              <Modal.Container size="md">
+                <Modal.Header onClose={handleCloseModal}>
+                  Change Password
+                </Modal.Header>
+                <Modal.Body>
+                  <form onSubmit={handleSubmit} id="changePasswordForm">
+                    <div className="space-y-4">
+                      <div>
+                        <TextInput
+                          name="currentPassword"
+                          type="password"
+                          label="Current Password"
+                          value={formik.values.currentPassword}
+                          onChange={formik.handleChange}
+                          error={formik.errors.currentPassword}
+                          touched={formik.touched.currentPassword}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <TextInput
+                          name="newPassword"
+                          type="password"
+                          label="New Password"
+                          value={formik.values.newPassword}
+                          onChange={formik.handleChange}
+                          error={formik.errors.newPassword}
+                          touched={formik.touched.newPassword}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <TextInput
+                          name="confirmPassword"
+                          type="password"
+                          label="Confirm New Password"
+                          value={formik.values.confirmPassword}
+                          onChange={formik.handleChange}
+                          error={formik.errors.confirmPassword}
+                          touched={formik.touched.confirmPassword}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </form>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    variant="outline"
+                    onClick={handleCloseModal}
+                    disabled={loading}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    form="changePasswordForm"
+                    variant="primary"
+                    disabled={loading}
+                  >
+                    {loading ? "Updating..." : "Update Password"}
+                  </Button>
+                </Modal.Footer>
+              </Modal.Container>
+            </Modal.Backdrop>
+          )}
         </div>
       </div>
     </div>

@@ -39,6 +39,13 @@ const LoginPage = () => {
           }).then(() => {
             navigate("/");
           });
+        } else if (login.rejected.match(result)) {
+          Swal.fire({
+            title: "Login Failed!",
+            text: "Invalid phone number or password.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
         }
       } catch (error) {
         console.error("Login error:", error);

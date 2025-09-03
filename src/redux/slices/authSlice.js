@@ -22,16 +22,6 @@ const removeUserData = () => {
   localStorage.removeItem("userData");
 };
 
-const initialState = {
-  isAuthenticated: !!getToken(),
-  token: getToken() || null,
-  user: getUserData(),
-  loading: false,
-  error: null,
-  updateError: null,
-  updateSuccess: false,
-};
-
 // Async Thunk for register
 export const register = createAsyncThunk(
   "auth/register",
@@ -74,7 +64,7 @@ export const logoutUser = createAsyncThunk(
     try {
       const response = await authService.logout();
       removeToken();
-      return response.data;
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -113,10 +103,17 @@ export const getProfile = createAsyncThunk(
 // Async Thunk for update password
 export const updatePassword = createAsyncThunk(
   "auth/updatePassword",
-  async (passwordData, { rejectWithValue }) => {
+  async (
+    { currentPassword, newPassword, newPasswordConfirmation },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await authService.updatePassword(passwordData);
-      return response.data;
+      const response = await authService.updatePassword(
+        currentPassword,
+        newPassword,
+        newPasswordConfirmation
+      );
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -129,7 +126,16 @@ export const updatePassword = createAsyncThunk(
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: {
+    isAuthenticated: !!getToken(),
+    token: getToken() || null,
+    user: getUserData(),
+    loading: false,
+    error: null,
+    message: null,
+    updateSuccess: null,
+    updateError: null,
+  },
   reducers: {
     logout(state) {
       state.isAuthenticated = false;
@@ -144,10 +150,12 @@ const authSlice = createSlice({
     },
     clearError(state) {
       state.error = null;
-      state.updateError = null;
     },
     clearUpdateSuccess(state) {
-      state.updateSuccess = false;
+      state.updateSuccess = null;
+    },
+    clearUpdateError(state) {
+      state.updateError = null;
     },
   },
   extraReducers: (builder) => {
@@ -161,7 +169,7 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload.errors;
       })
       .addCase(login.pending, (state) => {
         state.loading = true;
@@ -188,7 +196,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload.errors;
       })
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
@@ -229,22 +237,30 @@ const authSlice = createSlice({
       })
       .addCase(updatePassword.pending, (state) => {
         state.loading = true;
-        state.updateError = null;
-        state.updateSuccess = false;
+        state.error = null;
       })
-      .addCase(updatePassword.fulfilled, (state) => {
+      .addCase(updatePassword.fulfilled, (state, action) => {
         state.loading = false;
+        state.message = action.payload.responseMessage;
+        state.error = null;
+        state.updateError = false;
         state.updateSuccess = true;
-        state.updateError = null;
       })
       .addCase(updatePassword.rejected, (state, action) => {
         state.loading = false;
-        state.updateError = action.payload;
+        state.message = action.payload?.responseMessage;
+        state.error = action.payload?.errors;
+        state.updateError = true;
         state.updateSuccess = false;
       });
   },
 });
 
-export const { logout, setCredentials, clearError, clearUpdateSuccess } =
-  authSlice.actions;
+export const {
+  logout,
+  setCredentials,
+  clearError,
+  clearUpdateSuccess,
+  clearUpdateError,
+} = authSlice.actions;
 export default authSlice.reducer;

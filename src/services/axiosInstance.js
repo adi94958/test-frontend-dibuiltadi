@@ -10,41 +10,27 @@ const axiosInstance = axios.create({
   },
 });
 
-// Request Interceptor - Add token to headers
+// Request Interceptor - Add Bearer token
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor - Handle 401 unauthorized
+// Response Interceptor - Handle 401
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle 401 unauthorized - tapi jangan terlalu agresif
     if (error.response?.status === 401) {
-      // Cek apakah ini benar-benar unauthorized atau hanya token expired
-      const isRealUnauthorized =
-        error.response?.data?.message?.toLowerCase().includes("unauthorized") ||
-        error.response?.data?.message
-          ?.toLowerCase()
-          .includes("invalid token") ||
-        error.response?.data?.message?.toLowerCase().includes("token expired");
-
-      if (isRealUnauthorized) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("userData");
-
-        // Redirect ke login hanya jika benar-benar unauthorized
-        window.location.href = "/login";
-      }
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userData");
+      window.location.href = "/login";
     }
-
     return Promise.reject(error);
   }
 );

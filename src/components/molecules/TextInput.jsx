@@ -28,13 +28,13 @@ const TextInput = ({
 
   const getInputStyle = () => {
     const baseStyle =
-      "w-full px-4 pt-6 pb-2 border-2 rounded-xl outline-none transition-all duration-200 bg-gray-50/50";
+      "w-full px-4 pt-6 pb-2 border-2 rounded-xl outline-none transition-colors duration-150 bg-gray-50/50";
 
     if (hasError) {
       return `${baseStyle} border-red-400 focus:border-red-500 focus:bg-red-50/30`;
     }
 
-    return `${baseStyle} border-gray-200 focus:border-blue-500 focus:bg-blue-50/30 hover:bg-gray-50 focus:shadow-lg focus:shadow-blue-500/10`;
+    return `${baseStyle} border-gray-200 focus:border-blue-500 focus:bg-blue-50/30 hover:bg-gray-50`;
   };
 
   const getLabelColor = () => {
@@ -80,11 +80,11 @@ const TextInput = ({
             variant="caption"
             color={getLabelColor()}
             className={`
-              absolute left-4 transition-all duration-200 pointer-events-none font-medium
+              absolute left-4 transition-all duration-150 pointer-events-none font-medium
               ${
                 shouldFloatLabel
                   ? "top-2 text-xs"
-                  : "top-1/2 transform -translate-y-1/2"
+                  : "top-1/2 -translate-y-1/2"
               }
             `}
           >
@@ -118,11 +118,11 @@ const TextInput = ({
           variant="body"
           color={getLabelColor()}
           className={`
-              absolute left-4 transition-all duration-200 pointer-events-none font-medium
+              absolute left-4 transition-all duration-150 pointer-events-none font-medium
               ${
                 shouldFloatLabel
                   ? "top-2 text-xs"
-                  : "top-1/2 transform -translate-y-1/2"
+                  : "top-1/2 -translate-y-1/2"
               }
             `}
         >

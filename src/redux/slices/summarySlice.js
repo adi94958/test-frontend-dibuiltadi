@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { summaryService } from "../../services/apis/summaryService";
-import * as summaryReducers from "../reducers/summaryReducer";
 
 const initialState = {
   dailyTransactions: [],
@@ -95,31 +94,52 @@ const summarySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Get daily transactions summary cases
-      .addCase(getDailyTransactionsSummary.pending, summaryReducers.fetchDailyTransactionsPending)
-      .addCase(getDailyTransactionsSummary.fulfilled, summaryReducers.fetchDailyTransactionsFulfilled)
-      .addCase(getDailyTransactionsSummary.rejected, summaryReducers.fetchDailyTransactionsRejected)
-      // Get monthly transactions summary cases
-      .addCase(getMonthlyTransactionsSummary.pending, summaryReducers.fetchMonthlyTransactionsPending)
-      .addCase(getMonthlyTransactionsSummary.fulfilled, summaryReducers.fetchMonthlyTransactionsFulfilled)
-      .addCase(getMonthlyTransactionsSummary.rejected, summaryReducers.fetchMonthlyTransactionsRejected)
-      // Get yearly transactions summary cases
-      .addCase(getYearlyTransactionsSummary.pending, summaryReducers.fetchYearlyTransactionsPending)
-      .addCase(getYearlyTransactionsSummary.fulfilled, summaryReducers.fetchYearlyTransactionsFulfilled)
-      .addCase(getYearlyTransactionsSummary.rejected, summaryReducers.fetchYearlyTransactionsRejected)
-      // Get top customers summary cases
-      .addCase(getTopCustomersSummary.pending, summaryReducers.fetchTopCustomersPending)
-      .addCase(getTopCustomersSummary.fulfilled, summaryReducers.fetchTopCustomersFulfilled)
-      .addCase(getTopCustomersSummary.rejected, summaryReducers.fetchTopCustomersRejected);
+      .addCase(getDailyTransactionsSummary.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getDailyTransactionsSummary.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dailyTransactions = action.payload;
+      })
+      .addCase(getDailyTransactionsSummary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getMonthlyTransactionsSummary.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getMonthlyTransactionsSummary.fulfilled, (state, action) => {
+        state.loading = false;
+        state.monthlyTransactions = action.payload;
+      })
+      .addCase(getMonthlyTransactionsSummary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getYearlyTransactionsSummary.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getYearlyTransactionsSummary.fulfilled, (state, action) => {
+        state.loading = false;
+        state.yearlyTransactions = action.payload;
+      })
+      .addCase(getYearlyTransactionsSummary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getTopCustomersSummary.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getTopCustomersSummary.fulfilled, (state, action) => {
+        state.loading = false;
+        state.topCustomers = action.payload;
+      })
+      .addCase(getTopCustomersSummary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
 export const { clearError, clearSummaryData } = summarySlice.actions;
-
-// Export with shorter names for easier import
-export const getDailyTransactions = getDailyTransactionsSummary;
-export const getMonthlyTransactions = getMonthlyTransactionsSummary;
-export const getYearlyTransactions = getYearlyTransactionsSummary;
-export const getTopCustomers = getTopCustomersSummary;
-
 export default summarySlice.reducer;

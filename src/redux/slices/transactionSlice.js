@@ -1,14 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { transactionService } from "../../services/apis/transactionService";
-import * as transactionReducers from "../reducers/transactionReducer";
-
-const initialState = {
-  transactions: [],
-  transactionDetail: null,
-  pagination: null,
-  loading: false,
-  error: null,
-};
 
 // Async Thunk for get all transactions
 export const getAllTransactions = createAsyncThunk(
@@ -46,7 +37,13 @@ export const getTransactionDetail = createAsyncThunk(
 
 const transactionSlice = createSlice({
   name: "transaction",
-  initialState,
+  initialState: {
+    transactions: [],
+    transactionDetail: null,
+    pagination: null,
+    loading: false,
+    error: null,
+  },
   reducers: {
     clearError(state) {
       state.error = null;
@@ -57,14 +54,28 @@ const transactionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Get all transactions cases
-      .addCase(getAllTransactions.pending, transactionReducers.fetchAllTransactionsPending)
-      .addCase(getAllTransactions.fulfilled, transactionReducers.fetchAllTransactionsFulfilled)
-      .addCase(getAllTransactions.rejected, transactionReducers.fetchAllTransactionsRejected)
-      // Get transaction detail cases
-      .addCase(getTransactionDetail.pending, transactionReducers.fetchTransactionDetailPending)
-      .addCase(getTransactionDetail.fulfilled, transactionReducers.fetchTransactionDetailFulfilled)
-      .addCase(getTransactionDetail.rejected, transactionReducers.fetchTransactionDetailRejected);
+      .addCase(getAllTransactions.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getAllTransactions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactions = action.payload;
+      })
+      .addCase(getAllTransactions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getTransactionDetail.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getTransactionDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactionDetail = action.payload;
+      })
+      .addCase(getTransactionDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

@@ -50,22 +50,20 @@ export const authService = {
   },
 
   // Update Password
-  updatePassword: async (passwordData) => {
+  updatePassword: async (
+    currentPassword,
+    newPassword,
+    newPasswordConfirmation
+  ) => {
     try {
-      const response = await axiosInstance.put(
-        "/api/v1/auth/password",
-        passwordData
-      );
+      const response = await axiosInstance.put("/api/v1/auth/password", {
+        currentPassword,
+        newPassword,
+        newPasswordConfirmation,
+      });
       return handleApiResponse(response);
     } catch (error) {
       handleApiError(error);
     }
   },
 };
-
-// Individual export functions for backward compatibility
-export const registerUser = authService.register;
-export const loginUser = authService.login;
-export const logoutUser = authService.logout;
-export const getUserProfile = authService.getProfile;
-export const updateUserPassword = authService.updatePassword;

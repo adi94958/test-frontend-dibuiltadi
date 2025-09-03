@@ -15,6 +15,26 @@ export const loginSchema = yup.object().shape({
     .max(50, messages.password.maxLength),
 });
 
+export const changePasswordSchema = yup.object().shape({
+  currentPassword: yup
+    .string()
+    .required(messages.currentPassword.required)
+    .min(8, messages.currentPassword.minLength)
+    .max(50, messages.currentPassword.maxLength),
+
+  newPassword: yup
+    .string()
+    .required(messages.newPassword.required)
+    .min(8, messages.newPassword.minLength)
+    .max(50, messages.newPassword.maxLength)
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, messages.newPassword.pattern),
+
+  confirmPassword: yup
+    .string()
+    .required(messages.confirmPassword.required)
+    .oneOf([yup.ref("newPassword")], messages.confirmPassword.mismatch),
+});
+
 export const registerSchema = yup.object().shape({
   name: yup
     .string()
@@ -40,7 +60,8 @@ export const registerSchema = yup.object().shape({
     .max(50, messages.address.maxLength),
   password: yup
     .string()
-    .required(messages.password.required)
-    .min(8, messages.password.minLength)
-    .max(50, messages.password.maxLength),
+    .required(messages.newPassword.required)
+    .min(8, messages.newPassword.minLength)
+    .max(50, messages.newPassword.maxLength)
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, messages.newPassword.pattern),
 });
