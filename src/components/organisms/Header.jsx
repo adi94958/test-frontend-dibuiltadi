@@ -18,6 +18,7 @@ const Header = memo(() => {
 
   const { user } = useSelector((state) => state.auth);
   const isCollapsed = useSelector((state) => state.sidebar.isCollapsed);
+  const isMobileMenuOpen = useSelector((state) => state.sidebar.isMobileMenuOpen);
   const handleProfileClick = useCallback(() => {
     setIsDropdownOpen((prev) => !prev);
   }, []);
@@ -73,13 +74,20 @@ const Header = memo(() => {
 
   return (
     <header 
-      className={`fixed top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-4 py-3 md:px-6 md:py-4 ${
-        isCollapsed ? "lg:left-16" : "lg:left-64"
-      } right-0`}
+      className={`fixed top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 h-16 ${
+        isMobileMenuOpen 
+          ? "left-64 right-0" // Ketika sidebar mobile terbuka, header bergeser ke kanan
+          : "left-0 right-0"  // Normal full width
+      } ${
+        isCollapsed ? "lg:ml-16" : "lg:ml-64"
+      }`}
     >
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between lg:justify-end h-full">
+        {/* Mobile menu space - reserve space for hamburger */}
+        <div className="w-12 lg:hidden"></div>
+        
         <div className="flex items-center space-x-3">
-          <div className="text-right">
+          <div className="text-right hidden md:block">
             <Text variant="body" color="dark" className="font-medium">
               {user.name}
             </Text>
@@ -91,7 +99,7 @@ const Header = memo(() => {
               name={user.name}
               size="md"
               onClick={handleProfileClick}
-              className="ring-2 ring-transparent hover:ring-blue-200 transition-all duration-200"
+              className="ring-2 ring-transparent hover:ring-blue-200 transition-all duration-200 cursor-pointer"
             />
 
             {isDropdownOpen && (

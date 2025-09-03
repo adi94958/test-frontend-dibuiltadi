@@ -2,9 +2,9 @@
 const ModalBackdrop = ({ onClick, children }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div 
-        className="absolute inset-0 bg-black/30 transition-opacity duration-200" 
-        onClick={onClick} 
+      <div
+        className="absolute inset-0 bg-black/30 transition-opacity duration-200"
+        onClick={onClick}
       />
       {children}
     </div>
@@ -60,11 +60,7 @@ const ModalHeader = ({ onClose, children }) => {
 
 // Modal Body Component
 const ModalBody = ({ children }) => {
-  return (
-    <div className="p-6 overflow-y-auto max-h-[60vh]">
-      {children}
-    </div>
-  );
+  return <div className="p-6 overflow-y-auto max-h-[60vh]">{children}</div>;
 };
 
 // Modal Footer Component

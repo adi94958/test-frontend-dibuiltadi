@@ -81,11 +81,7 @@ const TextInput = ({
             color={getLabelColor()}
             className={`
               absolute left-4 transition-all duration-150 pointer-events-none font-medium
-              ${
-                shouldFloatLabel
-                  ? "top-2 text-xs"
-                  : "top-1/2 -translate-y-1/2"
-              }
+              ${shouldFloatLabel ? "top-2 text-xs" : "top-1/2 -translate-y-1/2"}
             `}
           >
             {label}
@@ -119,11 +115,7 @@ const TextInput = ({
           color={getLabelColor()}
           className={`
               absolute left-4 transition-all duration-150 pointer-events-none font-medium
-              ${
-                shouldFloatLabel
-                  ? "top-2 text-xs"
-                  : "top-1/2 -translate-y-1/2"
-              }
+              ${shouldFloatLabel ? "top-2 text-xs" : "top-1/2 -translate-y-1/2"}
             `}
         >
           {label}
