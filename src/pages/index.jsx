@@ -10,6 +10,7 @@ const DetailCustomer = lazy(() => import("./Customer/DetailCustomer"));
 const Dashboard = lazy(() => import("./Summary"));
 const Transaction = lazy(() => import("./Transaction"));
 const DetailSummary = lazy(() => import("./Transaction/DetailTransaction"));
+const Profile = lazy(() => import("./Profile"));
 
 // Auth component (Login/Register)
 const Login = lazy(() => import("./Auth/Login"));
@@ -46,16 +47,19 @@ const Pages = () => {
         {isAuthenticated && !isPublicRoute && <Sidebar />}
 
         {/* Main Content */}
-        <div 
+        <div
           className={`
             min-h-screen transition-all duration-300 ease-in-out
-            ${!isPublicRoute && isAuthenticated 
-              ? (isCollapsed ? 'lg:ml-16' : 'lg:ml-64') 
-              : 'ml-0'
+            ${
+              !isPublicRoute && isAuthenticated
+                ? isCollapsed
+                  ? "lg:ml-16"
+                  : "lg:ml-64"
+                : "ml-0"
             }
           `}
         >
-          <div className="p-6">
+          <>
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />
@@ -122,10 +126,23 @@ const Pages = () => {
                 }
               />
 
+              {/* Profile Route */}
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute
+                    isAuthenticated={isAuthenticated}
+                    loading={loading}
+                  >
+                    <Profile />
+                  </PrivateRoute>
+                }
+              />
+
               {/* Catch-all Route */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </div>
+          </>
         </div>
       </Suspense>
     </div>

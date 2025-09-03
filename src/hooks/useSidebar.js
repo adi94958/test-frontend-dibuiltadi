@@ -9,13 +9,16 @@ import {
 
 export const useSidebar = () => {
   const dispatch = useDispatch();
-  const { isCollapsed, isMobileMenuOpen } = useSelector((state) => state.sidebar);
+  const { isCollapsed, isMobileMenuOpen } = useSelector(
+    (state) => state.sidebar
+  );
 
   return {
     isCollapsed,
     isMobileMenuOpen,
     toggleSidebar: () => dispatch(toggleSidebar()),
-    setSidebarCollapsed: (collapsed) => dispatch(setSidebarCollapsed(collapsed)),
+    setSidebarCollapsed: (collapsed) =>
+      dispatch(setSidebarCollapsed(collapsed)),
     toggleMobileMenu: () => dispatch(toggleMobileMenu()),
     setMobileMenuOpen: (open) => dispatch(setMobileMenuOpen(open)),
     closeMobileMenu: () => dispatch(closeMobileMenu()),

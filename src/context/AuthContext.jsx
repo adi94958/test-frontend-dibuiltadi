@@ -57,8 +57,8 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
     }
     setLoading(false);
-  }, [dispatch]); 
-  
+  }, [dispatch]);
+
   // Fungsi register
   const register = async (name, phone, email, address, password) => {
     try {
@@ -204,9 +204,10 @@ export const AuthProvider = ({ children }) => {
         // Dispatch logout action
         dispatch(logoutAction());
 
-          localStorage.removeItem("accessToken");
-          setIsAuthenticated(false);
-          setUser(null);        Swal.fire({
+        localStorage.removeItem("accessToken");
+        setIsAuthenticated(false);
+        setUser(null);
+        Swal.fire({
           title: authConstants.LOGOUT_SUCCESS_TITLE,
           text: authConstants.LOGOUT_SUCCESS_TEXT,
           icon: authConstants.ICON_SUCCESS,

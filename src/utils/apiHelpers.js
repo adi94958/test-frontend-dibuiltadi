@@ -11,10 +11,10 @@ export const handleApiResponse = (response) => {
     // Check if we have backend format with responseCode
     if (data.responseCode) {
       const code = parseInt(data.responseCode);
-      
+
       if (code === API_STATUS_CODES.SUCCESS) {
         return data; // Return the full response for success
-      }      // For non-success codes, still return data but let caller handle
+      } // For non-success codes, still return data but let caller handle
       return data;
     }
 

@@ -69,7 +69,7 @@ const Sidebar = () => {
       `}
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-700">
+      <div className="p-5 border-b border-gray-700">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <h1 className="text-xl font-semibold text-white truncate">
@@ -99,12 +99,12 @@ const Sidebar = () => {
             const isActive = isActiveRoute(item.path);
 
             return (
-              <li key={item.path}>
+              <li key={item.path} className="relative">
                 <Link
                   to={item.path}
                   onClick={closeMobileMenu}
                   className={`
-                    group flex items-center p-3 rounded-lg transition-all duration-200
+                    group relative flex items-center h-12 px-3 rounded-lg transition-all duration-200 w-full
                     ${
                       isActive
                         ? "bg-blue-600 text-white shadow-lg"
@@ -112,11 +112,11 @@ const Sidebar = () => {
                     }
                     ${isCollapsed ? "justify-center" : "justify-start"}
                   `}
-                  title={isCollapsed ? item.name : ""}
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />
+
                   {!isCollapsed && (
-                    <span className="ml-3 font-medium transition-opacity duration-200">
+                    <span className="ml-3 font-medium transition-opacity duration-200 truncate">
                       {item.name}
                     </span>
                   )}
@@ -138,7 +138,7 @@ const Sidebar = () => {
       <div className="p-4 border-t border-gray-700">
         <div
           className={`
-            flex items-center text-gray-400 text-sm transition-all duration-200
+            flex items-center text-gray-400 text-sm transition-all duration-200 h-6
             ${isCollapsed ? "justify-center" : "justify-start"}
           `}
         >

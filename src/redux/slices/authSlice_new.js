@@ -6,14 +6,30 @@ const getToken = () => localStorage.getItem("accessToken");
 const setToken = (token) => localStorage.setItem("accessToken", token);
 const removeToken = () => localStorage.removeItem("accessToken");
 
+const getUser = () => {
+  try {
+    const userString = localStorage.getItem("user");
+    if (!userString || userString === "undefined" || userString === "null") {
+      return null;
+    }
+    return JSON.parse(userString);
+  } catch {
+    return null;
+  }
+};
+
+const setUser = (user) => {
+  localStorage.setItem("user", JSON.stringify(user));
+};
+
+const removeUser = () => localStorage.removeItem("user");
+
 const initialState = {
   isAuthenticated: !!getToken(),
+  user: getUser(),
   token: getToken() || null,
-  user: null,
   loading: false,
   error: null,
-  updateError: null,
-  updateSuccess: false,
 };
 
 // Async Thunk for register
@@ -23,7 +39,6 @@ export const register = createAsyncThunk(
     try {
       const response = await authService.register(userData);
 
-      // Handle backend response format
       const responseCode = parseInt(response.responseCode);
       if (responseCode === API_STATUS_CODES.SUCCESS) {
         return response;
@@ -36,7 +51,7 @@ export const register = createAsyncThunk(
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
       } else {
-        return rejectWithValue(err.message);
+        return rejectWithValue({ message: err.message });
       }
     }
   }
@@ -49,11 +64,19 @@ export const login = createAsyncThunk(
     try {
       const response = await authService.login(phone, password);
 
-      // Handle backend response format: { responseCode: "20000", accessToken: "...", phone: "..." }
+      console.log("Login response code:", response?.responseCode);
+
       const responseCode = parseInt(response.responseCode);
       if (responseCode === API_STATUS_CODES.SUCCESS && response.accessToken) {
-        // Save to localStorage
+        const userData = {
+          name: response.name,
+          phone: response.phone,
+          email: response.email,
+          address: response.address,
+        };
+
         setToken(response.accessToken);
+        setUser(userData);
 
         return response;
       } else {
@@ -76,42 +99,12 @@ export const logoutUser = createAsyncThunk(
     try {
       const response = await authService.logout();
       removeToken();
+      removeUser();
       return response.data;
     } catch (err) {
-      if (err.response && err.response.data) {
-        return rejectWithValue(err.response.data);
-      } else {
-        return rejectWithValue(err.message);
-      }
-    }
-  }
-);
-
-// Async Thunk for get profile
-export const getProfile = createAsyncThunk(
-  "auth/getProfile",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await authService.getProfile();
-      return response.data;
-    } catch (err) {
-      if (err.response && err.response.data) {
-        return rejectWithValue(err.response.data);
-      } else {
-        return rejectWithValue(err.message);
-      }
-    }
-  }
-);
-
-// Async Thunk for update password
-export const updatePassword = createAsyncThunk(
-  "auth/updatePassword",
-  async (passwordData, { rejectWithValue }) => {
-    try {
-      const response = await authService.updatePassword(passwordData);
-      return response.data;
-    } catch (err) {
+      // Even if logout fails on server, clear local storage
+      removeToken();
+      removeUser();
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
       } else {
@@ -127,20 +120,20 @@ const authSlice = createSlice({
   reducers: {
     logout(state) {
       state.isAuthenticated = false;
-      state.token = null;
       state.user = null;
+      state.token = null;
       removeToken();
+      removeUser();
     },
     setCredentials(state, action) {
       state.isAuthenticated = true;
+      state.user = action.payload.user;
       state.token = action.payload.token;
+      setToken(action.payload.token);
+      setUser(action.payload.user);
     },
     clearError(state) {
       state.error = null;
-      state.updateError = null;
-    },
-    clearUpdateSuccess(state) {
-      state.updateSuccess = false;
     },
   },
   extraReducers: (builder) => {
@@ -164,13 +157,10 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.token = action.payload.accessToken;
         state.user = {
-          code: action.payload.code,
           name: action.payload.name,
           phone: action.payload.phone,
           email: action.payload.email,
-          profileImage: action.payload.profileImage,
-          roleCode: action.payload.roleCode,
-          roleName: action.payload.roleName,
+          address: action.payload.address,
         };
         state.loading = false;
         state.error = null;
@@ -185,46 +175,18 @@ const authSlice = createSlice({
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.isAuthenticated = false;
-        state.token = null;
         state.user = null;
+        state.token = null;
         state.loading = false;
       })
-      .addCase(logoutUser.rejected, (state, action) => {
+      .addCase(logoutUser.rejected, (state) => {
         state.isAuthenticated = false;
-        state.token = null;
         state.user = null;
+        state.token = null;
         state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(getProfile.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getProfile.fulfilled, (state) => {
-        state.loading = false;
-      })
-      .addCase(getProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(updatePassword.pending, (state) => {
-        state.loading = true;
-        state.updateError = null;
-        state.updateSuccess = false;
-      })
-      .addCase(updatePassword.fulfilled, (state) => {
-        state.loading = false;
-        state.updateSuccess = true;
-        state.updateError = null;
-      })
-      .addCase(updatePassword.rejected, (state, action) => {
-        state.loading = false;
-        state.updateError = action.payload;
-        state.updateSuccess = false;
       });
   },
 });
 
-export const { logout, setCredentials, clearError, clearUpdateSuccess } =
-  authSlice.actions;
+export const { logout, setCredentials, clearError } = authSlice.actions;
 export default authSlice.reducer;
