@@ -1,8 +1,6 @@
-import { useEffect, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContextProvider";
-import { useDispatch } from "react-redux";
-import { getProfile } from "../redux/slices/authSlice";
 import Loading from "../components/atoms/Loading";
 
 // Lazy loading untuk komponen
@@ -10,7 +8,7 @@ const Customer = lazy(() => import("./Customer"));
 const DetailCustomer = lazy(() => import("./Customer/DetailCustomer"));
 const Dashboard = lazy(() => import("./Summary"));
 const Transaction = lazy(() => import("./Transaction"));
-const DetailSummary = lazy(() => import("./Transaction/DetailSummary"));
+const DetailSummary = lazy(() => import("./Transaction/DetailTransaction"));
 
 // Auth component (Login/Register)
 const Login = lazy(() => import("./Auth/Login"));
@@ -25,17 +23,9 @@ const Sidebar = lazy(() => import("../components/organisms/Sidebar"));
 const Pages = () => {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
-  const dispatch = useDispatch();
 
   const isPublicRoute =
     location.pathname === "/login" || location.pathname === "/register";
-
-  // Fetch user profile
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(getProfile());
-    }
-  }, [dispatch, isAuthenticated]);
 
   // Jika masih dalam proses loading, tampilkan spinner
   if (loading) {

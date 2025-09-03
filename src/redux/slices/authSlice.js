@@ -1,15 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authService } from "../../services/apis/authService";
-import { authConstants } from "../../constants/authConstants";
+import { API_STATUS_CODES } from "../../constants/apiConstants";
+
+const getToken = () => localStorage.getItem("accessToken");
+const setToken = (token) => localStorage.setItem("accessToken", token);
+const removeToken = () => localStorage.removeItem("accessToken");
 
 const initialState = {
-  isAuthenticated: !!localStorage.getItem(authConstants.TOKEN_KEY),
-  user: JSON.parse(localStorage.getItem(authConstants.USER_KEY)) || null,
-  token: localStorage.getItem(authConstants.TOKEN_KEY) || null,
+  isAuthenticated: !!getToken(),
+  token: getToken() || null,
   loading: false,
   error: null,
-  updateSuccess: false,
   updateError: null,
+  updateSuccess: false,
 };
 
 // Async Thunk for register
@@ -18,7 +21,16 @@ export const register = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await authService.register(userData);
-      return response.data;
+
+      // Handle backend response format
+      const responseCode = parseInt(response.responseCode);
+      if (responseCode === API_STATUS_CODES.SUCCESS) {
+        return response;
+      } else {
+        return rejectWithValue(
+          response.responseMessage || "Registration failed"
+        );
+      }
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -35,27 +47,23 @@ export const login = createAsyncThunk(
   async ({ phone, password }, { rejectWithValue }) => {
     try {
       const response = await authService.login(phone, password);
-      
-      // Store token and user data in localStorage
-      // Based on Postman collection, token comes as 'accessToken'
-      if (response.accessToken) {
-        localStorage.setItem(authConstants.TOKEN_KEY, response.accessToken);
+
+      // Handle backend response format: { responseCode: "20000", accessToken: "...", phone: "..." }
+      const responseCode = parseInt(response.responseCode);
+      if (responseCode === API_STATUS_CODES.SUCCESS && response.accessToken) {
         
-        // Store user data if available
-        const userData = {
-          phone,
-          // Add other user fields from response if available
-          ...response.user
-        };
-        localStorage.setItem(authConstants.USER_KEY, JSON.stringify(userData));
+        // Save to localStorage
+        setToken(response.accessToken);
+        
+        return response;
+      } else {
+        return rejectWithValue(response.responseMessage || "Login failed");
       }
-      
-      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
       } else {
-        return rejectWithValue(err.message);
+        return rejectWithValue({ message: err.message });
       }
     }
   }
@@ -67,17 +75,9 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await authService.logout();
-      
-      // Clear localStorage
-      localStorage.removeItem(authConstants.TOKEN_KEY);
-      localStorage.removeItem(authConstants.USER_KEY);
-      
+      removeToken();
       return response.data;
     } catch (err) {
-      // Even if API call fails, clear localStorage
-      localStorage.removeItem(authConstants.TOKEN_KEY);
-      localStorage.removeItem(authConstants.USER_KEY);
-      
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
       } else {
@@ -127,14 +127,11 @@ const authSlice = createSlice({
   reducers: {
     logout(state) {
       state.isAuthenticated = false;
-      state.user = null;
       state.token = null;
-      localStorage.removeItem(authConstants.TOKEN_KEY);
-      localStorage.removeItem(authConstants.USER_KEY);
+      removeToken();
     },
     setCredentials(state, action) {
       state.isAuthenticated = true;
-      state.user = action.payload.user;
       state.token = action.payload.token;
     },
     clearError(state) {
@@ -147,7 +144,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Register cases
       .addCase(register.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -159,55 +155,46 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Login cases
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isAuthenticated = true;
-        state.user = action.payload.user || { phone: action.payload.phone };
         state.token = action.payload.accessToken;
         state.loading = false;
+        state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Logout cases
       .addCase(logoutUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.isAuthenticated = false;
-        state.user = null;
         state.token = null;
         state.loading = false;
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.isAuthenticated = false;
-        state.user = null;
         state.token = null;
         state.loading = false;
         state.error = action.payload;
       })
-      // Get profile cases
       .addCase(getProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getProfile.fulfilled, (state, action) => {
-        state.user = action.payload;
+      .addCase(getProfile.fulfilled, (state) => {
         state.loading = false;
-        // Update localStorage with new user data
-        localStorage.setItem(authConstants.USER_KEY, JSON.stringify(action.payload));
       })
       .addCase(getProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Update password cases
       .addCase(updatePassword.pending, (state) => {
         state.loading = true;
         state.updateError = null;
@@ -226,5 +213,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setCredentials, clearError, clearUpdateSuccess } = authSlice.actions;
+export const { logout, setCredentials, clearError, clearUpdateSuccess } =
+  authSlice.actions;
 export default authSlice.reducer;

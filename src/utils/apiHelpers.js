@@ -1,64 +1,96 @@
-import {
-  API_STATUS_CODES,
-  isSuccessResponse,
-  isErrorResponse,
-} from "../constants/apiConstants";
+import { API_STATUS_CODES } from "../constants/apiConstants";
 
-// Helper function to handle API responses
+/**
+ * Handle successful API responses
+ * Backend format: { responseCode: "20000", responseMessage: "OK", accessToken: "...", ... }
+ */
 export const handleApiResponse = (response) => {
-  const { status, data, message, meta } = response.data;
+  try {
+    const data = response.data;
 
-  if (isSuccessResponse(status)) {
-    return {
-      success: true,
-      status,
-      data,
-      message,
-      // Include meta for paginated responses
-      ...(meta && { meta }),
-      // Include accessToken if present (for login)
-      ...(response.data.accessToken && {
-        accessToken: response.data.accessToken,
-      }),
-      // Include user if present (for login/profile)
-      ...(response.data.user && { user: response.data.user }),
-    };
-  } else if (isErrorResponse(status)) {
-    throw new Error(message || "API Error");
+    // Check if we have backend format with responseCode
+    if (data.responseCode) {
+      const code = parseInt(data.responseCode);
+      
+      if (code === API_STATUS_CODES.SUCCESS) {
+        return data; // Return the full response for success
+      }      // For non-success codes, still return data but let caller handle
+      return data;
+    }
+
+    // Fallback for other formats
+    return data;
+  } catch (error) {
+    console.error("Error parsing API response:", error.message);
+    return response.data;
   }
-
-  return response.data;
 };
 
-// Helper function to handle API errors
+/**
+ * Handle API errors consistently
+ * Backend error format: { responseCode: "42200", responseMessage: "Error", errors: {...} }
+ */
 export const handleApiError = (error) => {
-  if (error.response?.data) {
-    const { status, message, errors } = error.response.data;
-
-    // Handle specific error codes
-    switch (status) {
-      case API_STATUS_CODES.UNAUTHORIZED:
-        throw new Error("Unauthorized access. Please login again.");
-      case API_STATUS_CODES.FORBIDDEN:
-        throw new Error("Access forbidden. You don't have permission.");
-      case API_STATUS_CODES.NOT_FOUND:
-        throw new Error("Resource not found.");
-      case API_STATUS_CODES.VALIDATION_ERROR:
-        throw new Error(
-          errors
-            ? Object.values(errors).flat().join(", ")
-            : "Validation failed."
-        );
-      case API_STATUS_CODES.BAD_REQUEST:
-        throw new Error(message || "Bad request.");
-      case API_STATUS_CODES.SERVER_ERROR:
-        throw new Error("Server error. Please try again later.");
-      case API_STATUS_CODES.SERVICE_UNAVAILABLE:
-        throw new Error("Service temporarily unavailable.");
-      default:
-        throw new Error(message || "An error occurred.");
+  try {
+    // Network or other errors without response
+    if (!error.response) {
+      throw new Error("Network error. Please check your connection.");
     }
-  }
 
-  throw new Error(error.message || "Network error occurred.");
+    const errorData = error.response.data;
+
+    // Handle backend error format
+    if (errorData.responseCode) {
+      const code = parseInt(errorData.responseCode);
+
+      // Handle validation errors with detailed messages
+      if (code === API_STATUS_CODES.VALIDATION_ERROR && errorData.errors) {
+        const validationMessages = Object.values(errorData.errors)
+          .flat()
+          .join(", ");
+
+        const validationError = new Error(validationMessages);
+        validationError.response = { data: errorData };
+        throw validationError;
+      }
+
+      // Handle other error codes
+      const message = errorData.responseMessage || getErrorMessage(code);
+      const apiError = new Error(message);
+      apiError.response = { data: errorData };
+      throw apiError;
+    }
+
+    // Fallback for other error formats
+    const message = errorData.message || "An error occurred";
+    throw new Error(message);
+  } catch (err) {
+    // If error handling itself fails, throw original or new error
+    if (err.response) {
+      throw err; // Re-throw if it's our formatted error
+    }
+    throw new Error(error.message || "Unknown error occurred");
+  }
+};
+
+/**
+ * Get user-friendly error messages based on status codes
+ */
+const getErrorMessage = (code) => {
+  switch (code) {
+    case API_STATUS_CODES.UNAUTHORIZED:
+      return "Please login to continue.";
+    case API_STATUS_CODES.FORBIDDEN:
+      return "You don't have permission to perform this action.";
+    case API_STATUS_CODES.NOT_FOUND:
+      return "The requested resource was not found.";
+    case API_STATUS_CODES.BAD_REQUEST:
+      return "Invalid request. Please check your input.";
+    case API_STATUS_CODES.SERVER_ERROR:
+      return "Server error. Please try again later.";
+    case API_STATUS_CODES.SERVICE_UNAVAILABLE:
+      return "Service is temporarily unavailable.";
+    default:
+      return "An unexpected error occurred.";
+  }
 };

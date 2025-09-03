@@ -1,6 +1,5 @@
 // src/services/axiosInstance.js
 import axios from "axios";
-import { authConstants } from "../constants/authConstants";
 import { API_STATUS_CODES, isErrorResponse } from "../constants/apiConstants";
 
 const axiosInstance = axios.create({
@@ -18,10 +17,11 @@ axiosInstance.interceptors.request.use(
       config.headers["Content-Type"] = "application/json";
     }
 
-    // Ambil token dari localStorage
-    const token = localStorage.getItem(authConstants.TOKEN_KEY);
+    // Ambil token dari localStorage (sudah dengan Bearer prefix)
+    const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // Token sudah termasuk Bearer prefix dari authSlice
+      config.headers.Authorization = token;
     }
 
     return config;
@@ -55,8 +55,8 @@ axiosInstance.interceptors.response.use(
     // Handle unauthorized access
     if (customStatus === API_STATUS_CODES.UNAUTHORIZED || error.response?.status === 401) {
       // Clear localStorage
-      localStorage.removeItem(authConstants.TOKEN_KEY);
-      localStorage.removeItem(authConstants.USER_KEY);
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userData");
       
       // Trigger logout (will be handled by AuthContext)
       window.dispatchEvent(new CustomEvent('unauthorized-access'));

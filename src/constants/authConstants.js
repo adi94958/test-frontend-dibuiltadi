@@ -1,6 +1,6 @@
 export const authConstants = {
   // Token & Storage Keys (based on Postman collection using 'token')
-  TOKEN_KEY: "token",
+  TOKEN_KEY: "accessToken",
   USER_KEY: "user",
 
   // SweetAlert Icons
