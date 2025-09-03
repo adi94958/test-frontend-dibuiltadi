@@ -1,10 +1,6 @@
-import { Header } from "../../components/organisms";
-
 const TransactionPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-semibold mb-6">

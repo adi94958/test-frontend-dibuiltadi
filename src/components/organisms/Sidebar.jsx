@@ -142,7 +142,7 @@ const Sidebar = () => {
             ${isCollapsed ? "justify-center" : "justify-start"}
           `}
         >
-          {!isCollapsed && <span>© 2024 Admin</span>}
+          {!isCollapsed && <span>© AdiSaputera.</span>}
           {isCollapsed && <span className="text-xs">©</span>}
         </div>
       </div>

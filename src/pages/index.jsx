@@ -1,8 +1,9 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContextProvider";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loading from "../components/atoms/Loading";
+import { getProfile } from "../redux/slices/authSlice";
 
 // Lazy loading untuk komponen
 const Customer = lazy(() => import("./Customer"));
@@ -20,12 +21,20 @@ const Register = lazy(() => import("./Auth/Register"));
 const PrivateRoute = lazy(() => import("./PrivateRoute"));
 
 // Navigation components
+const Header = lazy(() => import("../components/organisms/Header"));
 const Sidebar = lazy(() => import("../components/organisms/Sidebar"));
 
 const Pages = () => {
   const { isAuthenticated, loading } = useAuth();
   const isCollapsed = useSelector((state) => state.sidebar.isCollapsed);
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(getProfile());
+    }
+  }, [dispatch, isAuthenticated]);
 
   const isPublicRoute =
     location.pathname === "/login" || location.pathname === "/register";
@@ -44,7 +53,12 @@ const Pages = () => {
     <div className="min-h-screen bg-gray-50">
       <Suspense fallback={<Loading centered={true} size="lg" />}>
         {/* Sidebar */}
-        {isAuthenticated && !isPublicRoute && <Sidebar />}
+        {isAuthenticated && !isPublicRoute && (
+          <>
+            <Sidebar />
+            <Header />
+          </>
+        )}
 
         {/* Main Content */}
         <div

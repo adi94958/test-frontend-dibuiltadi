@@ -1,22 +1,25 @@
 import { Header } from "../../components/organisms";
-import { ProfileAvatar } from "../../components/molecules";
+import { Avatar } from "../../components/molecules";
 import { Button } from "../../components/molecules";
 import { CameraIcon } from "@heroicons/react/24/outline";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getProfile } from "../../redux/slices/authSlice";
 
 const ProfilePage = () => {
-  // Get user data from auth state
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
   const handleChangePhoto = () => {
     console.log("Change profile photo");
   };
 
+  useEffect(() => {
+    dispatch(getProfile());
+  }, [dispatch]);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <Header />
-
       {/* Profile Content */}
       <div className="max-w-4xl mx-auto p-6">
         {/* Profile Header Card */}
@@ -25,7 +28,7 @@ const ProfilePage = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
               {/* Profile Avatar */}
               <div className="relative">
-                <ProfileAvatar
+                <Avatar
                   profileImage={user?.profileImage}
                   name={user?.name || "User"}
                   size="2xl"

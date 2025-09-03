@@ -1,33 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authService } from "../../services/apis/authService";
-import { API_STATUS_CODES } from "../../constants/apiConstants";
 
 const getToken = () => localStorage.getItem("accessToken");
 const setToken = (token) => localStorage.setItem("accessToken", token);
 const removeToken = () => localStorage.removeItem("accessToken");
 
-// Helper untuk user data
-const getUserData = () => {
-  try {
-    const userData = localStorage.getItem("userData");
-    return userData ? JSON.parse(userData) : null;
-  } catch {
-    return null;
-  }
-};
-
-const setUserData = (userData) => {
-  localStorage.setItem("userData", JSON.stringify(userData));
-};
-
-const removeUserData = () => {
-  localStorage.removeItem("userData");
-};
-
 const initialState = {
   isAuthenticated: !!getToken(),
   token: getToken() || null,
-  user: getUserData(), // Load user dari localStorage
+  user: null,
   loading: false,
   error: null,
   updateError: null,
@@ -40,16 +21,7 @@ export const register = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await authService.register(userData);
-
-      // Handle backend response format
-      const responseCode = parseInt(response.responseCode);
-      if (responseCode === API_STATUS_CODES.SUCCESS) {
-        return response;
-      } else {
-        return rejectWithValue(
-          response.responseMessage || "Registration failed"
-        );
-      }
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -66,31 +38,8 @@ export const login = createAsyncThunk(
   async ({ phone, password }, { rejectWithValue }) => {
     try {
       const response = await authService.login(phone, password);
-
-      // Handle backend response format: { responseCode: "20000", accessToken: "...", phone: "..." }
-      const responseCode = parseInt(response.responseCode);
-      if (responseCode === API_STATUS_CODES.SUCCESS && response.accessToken) {
-        // Save to localStorage
-        setToken(response.accessToken);
-        
-        // Prepare user data
-        const userData = {
-          code: response.code,
-          name: response.name,
-          phone: response.phone,
-          email: response.email,
-          profileImage: response.profileImage,
-          roleCode: response.roleCode,
-          roleName: response.roleName,
-        };
-        
-        // Save user data to localStorage
-        setUserData(userData);
-
-        return response;
-      } else {
-        return rejectWithValue(response.responseMessage || "Login failed");
-      }
+      setToken(response.accessToken);
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -125,25 +74,15 @@ export const getProfile = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await authService.getProfile();
-      
-      // Handle backend response format
-      const responseCode = parseInt(response.responseCode);
-      if (responseCode === API_STATUS_CODES.SUCCESS) {
-        // Return the user data from the response
-        return {
-          code: response.code || response.data?.code,
-          name: response.name || response.data?.name,
-          phone: response.phone || response.data?.phone,
-          email: response.email || response.data?.email,
-          profileImage: response.profileImage || response.data?.profileImage,
-          roleCode: response.roleCode || response.data?.roleCode,
-          roleName: response.roleName || response.data?.roleName,
-        };
-      } else {
-        return rejectWithValue(
-          response.responseMessage || "Failed to fetch profile"
-        );
-      }
+      return {
+        code: response.code,
+        name: response.name,
+        phone: response.phone,
+        email: response.email,
+        profileImage: response.profileImage,
+        roleCode: response.roleCode,
+        roleName: response.roleName,
+      };
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -180,7 +119,6 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
       removeToken();
-      removeUserData(); // Hapus user data juga
     },
     setCredentials(state, action) {
       state.isAuthenticated = true;
@@ -214,15 +152,6 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isAuthenticated = true;
         state.token = action.payload.accessToken;
-        state.user = {
-          code: action.payload.code,
-          name: action.payload.name,
-          phone: action.payload.phone,
-          email: action.payload.email,
-          profileImage: action.payload.profileImage,
-          roleCode: action.payload.roleCode,
-          roleName: action.payload.roleName,
-        };
         state.loading = false;
         state.error = null;
       })
@@ -238,8 +167,6 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.token = null;
         state.user = null;
-        state.loading = false;
-        removeUserData(); // Hapus user data
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.isAuthenticated = false;
@@ -247,15 +174,21 @@ const authSlice = createSlice({
         state.user = null;
         state.loading = false;
         state.error = action.payload;
-        removeUserData(); // Hapus user data
       })
       .addCase(getProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(getProfile.fulfilled, (state, action) => {
-        state.user = action.payload;
-        setUserData(action.payload); // Save fresh data to localStorage
+        state.user = {
+          code: action.payload.code,
+          name: action.payload.name,
+          phone: action.payload.phone,
+          email: action.payload.email,
+          profileImage: action.payload.profileImage,
+          roleCode: action.payload.roleCode,
+          roleName: action.payload.roleName,
+        };
         state.loading = false;
       })
       .addCase(getProfile.rejected, (state, action) => {

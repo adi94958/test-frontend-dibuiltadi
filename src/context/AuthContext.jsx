@@ -136,21 +136,22 @@ export const AuthProvider = ({ children }) => {
   // Fungsi login
   const login = async (phone, password) => {
     try {
-      const result = await dispatch(loginAction({ phone, password }));
+      setLoading(true);
+      const response = await dispatch(loginAction({ phone, password }));
 
-      if (loginAction.fulfilled.match(result)) {
+      if (loginAction.fulfilled.match(response)) {
         // Check responseCode - convert string to number for comparison
-        const responseCode = parseInt(result.payload?.responseCode);
+        const responseCode = parseInt(response.payload?.responseCode);
         if (responseCode === API_STATUS_CODES.SUCCESS) {
           console.log("Login success!");
 
           setIsAuthenticated(true);
-          setUser({ phone: result.payload?.phone });
+          setUser({ phone: response.payload?.phone });
 
           Swal.fire({
             title: authConstants.LOGIN_SUCCESS_TITLE,
             text:
-              result.payload.responseMessage ||
+              response.payload.responseMessage ||
               authConstants.LOGIN_SUCCESS_DEFAULT_MESSAGE,
             icon: authConstants.ICON_SUCCESS,
             confirmButtonText: authConstants.CONFIRM_BUTTON_TEXT_SUCCESS,
@@ -159,15 +160,15 @@ export const AuthProvider = ({ children }) => {
           });
         } else {
           throw new Error(
-            result.payload.responseMessage ||
+            response.payload.responseMessage ||
               authConstants.LOGIN_FAILED_DEFAULT_MESSAGE
           );
         }
       } else {
         // Handle rejected case
         const errorMessage =
-          result.payload?.responseMessage ||
-          result.payload?.message ||
+          response.payload?.responseMessage ||
+          response.payload?.message ||
           authConstants.LOGIN_FAILED_DEFAULT_MESSAGE;
         throw new Error(errorMessage);
       }
@@ -184,6 +185,8 @@ export const AuthProvider = ({ children }) => {
         icon: authConstants.ICON_ERROR,
         confirmButtonText: authConstants.CONFIRM_BUTTON_TEXT_ERROR,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
