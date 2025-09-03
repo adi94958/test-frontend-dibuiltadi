@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   HomeIcon,
@@ -6,31 +5,21 @@ import {
   CreditCardIcon,
   Bars3Icon,
   XMarkIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { useSidebar } from "../../hooks/useSidebar";
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const {
+    isCollapsed,
+    toggleSidebar,
+    isMobileMenuOpen,
+    toggleMobileMenu,
+    closeMobileMenu,
+  } = useSidebar();
+
   const location = useLocation();
-
-  // Auto collapse pada ukuran md dan otomatis expand pada lg
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        // lg breakpoint
-        setIsCollapsed(false);
-        setIsMobileMenuOpen(false);
-      } else if (window.innerWidth >= 768) {
-        // md breakpoint
-        setIsCollapsed(true);
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const menuItems = [
     {
@@ -60,8 +49,8 @@ const Sidebar = () => {
   // Mobile hamburger button
   const HamburgerButton = () => (
     <button
-      onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-      className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors"
+      onClick={toggleMobileMenu}
+      className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700 transition-colors shadow-lg"
     >
       {isMobileMenuOpen ? (
         <XMarkIcon className="w-6 h-6" />
@@ -75,21 +64,29 @@ const Sidebar = () => {
   const SidebarContent = () => (
     <div
       className={`
-        h-full bg-gray-900 text-white flex flex-col transition-all duration-300
+        h-full bg-gray-900 text-white flex flex-col transition-all duration-300 ease-in-out
         ${isCollapsed ? "w-16" : "w-64"}
-    `}
+      `}
     >
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
-            <h1 className="text-xl font-semibold text-white">Admin Panel</h1>
+            <h1 className="text-xl font-semibold text-white truncate">
+              Admin Panel
+            </h1>
           )}
+          {/* Desktop collapse button */}
           <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden md:block lg:block p-1.5 rounded-lg hover:bg-gray-700 transition-colors"
+            onClick={toggleSidebar}
+            className="hidden lg:block p-1.5 rounded-lg hover:bg-gray-700 transition-colors group"
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <Bars3Icon className="w-5 h-5" />
+            {isCollapsed ? (
+              <ChevronRightIcon className="w-5 h-5" />
+            ) : (
+              <ChevronLeftIcon className="w-5 h-5" />
+            )}
           </button>
         </div>
       </div>
@@ -105,24 +102,30 @@ const Sidebar = () => {
               <li key={item.path}>
                 <Link
                   to={item.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                   className={`
-                                    flex items-center p-3 rounded-lg transition-all duration-200
-                                    ${
-                                      isActive
-                                        ? "bg-blue-600 text-white shadow-lg"
-                                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                                    }
-                                    ${
-                                      isCollapsed
-                                        ? "justify-center"
-                                        : "justify-start"
-                                    }
-                                `}
+                    group flex items-center p-3 rounded-lg transition-all duration-200
+                    ${
+                      isActive
+                        ? "bg-blue-600 text-white shadow-lg"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                    }
+                    ${isCollapsed ? "justify-center" : "justify-start"}
+                  `}
+                  title={isCollapsed ? item.name : ""}
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />
                   {!isCollapsed && (
-                    <span className="ml-3 font-medium">{item.name}</span>
+                    <span className="ml-3 font-medium transition-opacity duration-200">
+                      {item.name}
+                    </span>
+                  )}
+
+                  {/* Tooltip for collapsed state */}
+                  {isCollapsed && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                      {item.name}
+                    </div>
                   )}
                 </Link>
               </li>
@@ -135,11 +138,12 @@ const Sidebar = () => {
       <div className="p-4 border-t border-gray-700">
         <div
           className={`
-                flex items-center text-gray-400 text-sm
-                ${isCollapsed ? "justify-center" : "justify-start"}
-            `}
+            flex items-center text-gray-400 text-sm transition-all duration-200
+            ${isCollapsed ? "justify-center" : "justify-start"}
+          `}
         >
           {!isCollapsed && <span>© 2024 Admin</span>}
+          {isCollapsed && <span className="text-xs">©</span>}
         </div>
       </div>
     </div>
@@ -154,7 +158,7 @@ const Sidebar = () => {
       {isMobileMenuOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={closeMobileMenu}
         />
       )}
 
@@ -166,8 +170,8 @@ const Sidebar = () => {
       {/* Mobile Sidebar */}
       <div
         className={`
-            lg:hidden fixed left-0 top-0 h-full z-40 transform transition-transform duration-300
-            ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:hidden fixed left-0 top-0 h-full z-40 transform transition-transform duration-300
+          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         <SidebarContent />

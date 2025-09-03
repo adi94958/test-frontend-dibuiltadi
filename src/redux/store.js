@@ -3,6 +3,7 @@ import authReducer from "./slices/authSlice";
 import customerReducer from "./slices/customerSlice";
 import transactionReducer from "./slices/transactionSlice";
 import summaryReducer from "./slices/summarySlice";
+import sidebarReducer from "./slices/sidebarSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     customer: customerReducer,
     transaction: transactionReducer,
     summary: summaryReducer,
+    sidebar: sidebarReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
