@@ -5,11 +5,29 @@ const getToken = () => localStorage.getItem("accessToken");
 const setToken = (token) => localStorage.setItem("accessToken", token);
 const removeToken = () => localStorage.removeItem("accessToken");
 
+// Helper untuk user data - PRE-LOAD untuk avoid delay
+const getUserData = () => {
+  try {
+    const userData = localStorage.getItem("userData");
+    return userData && userData !== "undefined" ? JSON.parse(userData) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setUserData = (userData) => {
+  localStorage.setItem("userData", JSON.stringify(userData));
+};
+
+const removeUserData = () => {
+  localStorage.removeItem("userData");
+};
+
 const initialState = {
   isAuthenticated: !!getToken(),
   token: getToken() || null,
-  user: null,
-  loading: false,
+  user: getUserData(), // PRE-LOAD user data untuk instant display
+  loading: false, // No loading by default untuk instant UI
   error: null,
   updateError: null,
   updateSuccess: false,
@@ -119,6 +137,7 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
       removeToken();
+      removeUserData(); // Hapus user data dari localStorage
     },
     setCredentials(state, action) {
       state.isAuthenticated = true;
@@ -152,6 +171,20 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isAuthenticated = true;
         state.token = action.payload.accessToken;
+
+        // Simpan user data ke state dan localStorage untuk instant display
+        const userData = {
+          code: action.payload.code,
+          name: action.payload.name,
+          phone: action.payload.phone,
+          email: action.payload.email,
+          profileImage: action.payload.profileImage,
+          roleCode: action.payload.roleCode,
+          roleName: action.payload.roleName,
+        };
+        state.user = userData;
+        setUserData(userData); // Persist untuk instant load next time
+
         state.loading = false;
         state.error = null;
       })
@@ -167,6 +200,7 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.token = null;
         state.user = null;
+        removeUserData();
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.isAuthenticated = false;
@@ -174,13 +208,13 @@ const authSlice = createSlice({
         state.user = null;
         state.loading = false;
         state.error = action.payload;
+        removeUserData();
       })
       .addCase(getProfile.pending, (state) => {
-        state.loading = true;
         state.error = null;
       })
       .addCase(getProfile.fulfilled, (state, action) => {
-        state.user = {
+        const userData = {
           code: action.payload.code,
           name: action.payload.name,
           phone: action.payload.phone,
@@ -189,10 +223,10 @@ const authSlice = createSlice({
           roleCode: action.payload.roleCode,
           roleName: action.payload.roleName,
         };
-        state.loading = false;
+        state.user = userData;
+        setUserData(userData);
       })
       .addCase(getProfile.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload;
       })
       .addCase(updatePassword.pending, (state) => {

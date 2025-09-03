@@ -30,7 +30,6 @@ const Header = memo(() => {
     dispatch(logoutUser());
   }, [dispatch]);
 
-  // Close dropdown outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
