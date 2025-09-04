@@ -4,12 +4,18 @@ import customerReducer from "./slices/customerSlice";
 import transactionReducer from "./slices/transactionSlice";
 import summaryReducer from "./slices/summarySlice";
 import sidebarReducer from "./slices/sidebarSlice";
+import salesReducer from "./slices/salesSlice";
+import cityReducer from "./slices/citySlice";
+import provinceReducer from "./slices/provinceSlice";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     customer: customerReducer,
     transaction: transactionReducer,
+    sales: salesReducer,
+    city: cityReducer,
+    province: provinceReducer,
     summary: summaryReducer,
     sidebar: sidebarReducer,
   },

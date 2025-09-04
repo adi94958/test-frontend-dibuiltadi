@@ -1,24 +1,31 @@
 import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Avatar } from "../molecules";
-import { Text } from "../atoms";
+import { Avatar } from "../Elements";
+import { Text } from "../Elements";
 import { logout } from "../../redux/slices/authSlice";
+import { useSidebar } from "../../hooks/useSidebar";
 import Swal from "sweetalert2";
 import {
   UserIcon,
   ArrowRightOnRectangleIcon,
+  Bars3Icon,
 } from "@heroicons/react/24/outline";
 
 const Header = memo(() => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { toggleSidebar, toggleMobileMenu } = useSidebar();
 
   const { user } = useSelector((state) => state.auth);
   const isCollapsed = useSelector((state) => state.sidebar.isCollapsed);
-  const isMobileMenuOpen = useSelector((state) => state.sidebar.isMobileMenuOpen);
+  const isMobileMenuOpen = useSelector(
+    (state) => state.sidebar.isMobileMenuOpen
+  );
+  
   const handleProfileClick = useCallback(() => {
     setIsDropdownOpen((prev) => !prev);
   }, []);
@@ -58,14 +65,41 @@ const Header = memo(() => {
     });
   }, [dispatch, navigate]);
 
+  const handleHamburgerClick = useCallback(() => {
+    // Hanya toggle mobile menu pada mobile, tidak ada collapse functionality
+    if (!isDesktop) {
+      toggleMobileMenu();
+    } else {
+      // Pada desktop, toggle collapse sidebar
+      toggleSidebar();
+    }
+  }, [isDesktop, toggleMobileMenu, toggleSidebar]);
+
+  const handleOverlayClick = useCallback(() => {
+    // Tutup mobile menu ketika overlay diklik
+    if (isMobileMenuOpen && !isDesktop) {
+      toggleMobileMenu();
+    }
+  }, [isMobileMenuOpen, isDesktop, toggleMobileMenu]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsDropdownOpen(false);
       }
     };
+    
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   if (!user) {
@@ -73,19 +107,29 @@ const Header = memo(() => {
   }
 
   return (
-    <header 
-      className={`fixed top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 h-16 ${
-        isMobileMenuOpen 
-          ? "left-64 right-0" // Ketika sidebar mobile terbuka, header bergeser ke kanan
-          : "left-0 right-0"  // Normal full width
-      } ${
-        isCollapsed ? "lg:ml-16" : "lg:ml-64"
-      }`}
-    >
-      <div className="flex items-center justify-between lg:justify-end h-full">
-        {/* Mobile menu space - reserve space for hamburger */}
-        <div className="w-12 lg:hidden"></div>
-        
+    <>
+      <header
+        className={`fixed top-0 z-40 bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 h-18 left-0 right-0 ${
+          isCollapsed ? "lg:ml-16" : "lg:ml-64"
+        }`}
+      >
+        <div className="flex items-center justify-between h-full">
+          {/* Left side - Hamburger button */}
+          <div className="flex items-center">
+            <button
+              onClick={handleHamburgerClick}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-600 hover:text-gray-900"
+              title={
+                isDesktop
+                  ? isCollapsed ? "Expand sidebar" : "Collapse sidebar"
+                  : "Open menu"
+              }
+            >
+              <Bars3Icon className="w-5 h-5" />
+            </button>
+          </div>
+
+        {/* Right side - User info and avatar */}
         <div className="flex items-center space-x-3">
           <div className="text-right hidden md:block">
             <Text variant="body" color="dark" className="font-medium">
@@ -139,6 +183,18 @@ const Header = memo(() => {
         </div>
       </div>
     </header>
+    
+    {/* Mobile overlay background */}
+    {isMobileMenuOpen && !isDesktop && (
+      <div className="fixed inset-0 z-50 lg:hidden">
+        <div
+          className="absolute inset-0 bg-black/30 transition-opacity duration-200"
+          onClick={handleOverlayClick}
+          aria-hidden="true"
+        />
+      </div>
+    )}
+    </>
   );
 });
 

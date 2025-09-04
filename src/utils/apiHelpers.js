@@ -26,7 +26,8 @@ export const handleApiResponse = (response) => {
  */
 export const handleApiError = (error) => {
   if (!error.response) {
-    throw new Error("Network error. Please check your connection.");
+    const networkError = new Error("Network error. Please check your connection.");
+    return networkError;
   }
 
   const { status, data } = error.response;
@@ -38,5 +39,5 @@ export const handleApiError = (error) => {
 
   const apiError = new Error(message);
   apiError.response = { status, data };
-  throw apiError;
+  return apiError;
 };

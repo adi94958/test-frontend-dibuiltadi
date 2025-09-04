@@ -11,7 +11,7 @@ export const transactionService = {
       });
       return handleApiResponse(response);
     } catch (error) {
-      handleApiError(error);
+      throw handleApiError(error);
     }
   },
 

@@ -10,7 +10,7 @@ export const getCustomerList = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await customerListService.getCustomerList();
-      return response.data;
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -27,7 +27,7 @@ export const getAllCustomers = createAsyncThunk(
   async (params = {}, { rejectWithValue }) => {
     try {
       const response = await customerService.getCustomers(params);
-      return response.data;
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -44,7 +44,7 @@ export const getCustomerDetail = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await customerService.getCustomerDetail(id);
-      return response.data;
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -61,7 +61,7 @@ export const storeCustomer = createAsyncThunk(
   async (customerData, { rejectWithValue }) => {
     try {
       const response = await customerService.storeCustomer(customerData);
-      return response.data;
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -91,7 +91,67 @@ const customerSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder;
+    builder
+      // Get Customer List
+      .addCase(getCustomerList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCustomerList.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customerList = action.payload.items || [];
+      })
+      .addCase(getCustomerList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Get All Customers
+      .addCase(getAllCustomers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllCustomers.fulfilled, (state, action) => {
+        state.loading = false;
+        // Response structure: { responseCode, responseMessage, items }
+        const response = action.payload;
+        
+        if (response && response.items) {
+          state.customers = response.items;
+          
+          // Since API doesn't return pagination info, calculate it
+          state.pagination = {
+            currentPage: action.meta.arg?.page || 1,
+            lastPage: Math.ceil(response.total / (action.meta.arg?.perPage || 10)),
+            perPage: action.meta.arg?.perPage || 10,
+            total: response.total, // Use total from API response
+          };
+        } else {
+          state.customers = [];
+          state.pagination = {
+            currentPage: 1,
+            lastPage: 1,
+            perPage: 10,
+            total: 0,
+          };
+        }
+      })
+      .addCase(getAllCustomers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Get Customer Detail
+      .addCase(getCustomerDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCustomerDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customerDetail = action.payload;
+      })
+      .addCase(getCustomerDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

@@ -7,7 +7,7 @@ export const getCities = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await cityService.getCities();
-      return response.data;
+      return response;
     } catch (err) {
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
@@ -21,7 +21,7 @@ export const getCities = createAsyncThunk(
 const citySlice = createSlice({
   name: "city",
   initialState: {
-    cities: [],
+    citiesList: [],
     loading: false,
     error: null,
   },
@@ -39,7 +39,7 @@ const citySlice = createSlice({
       })
       .addCase(getCities.fulfilled, (state, action) => {
         state.loading = false;
-        state.cities = action.payload;
+        state.citiesList = action.payload.items || [];
       })
       .addCase(getCities.rejected, (state, action) => {
         state.loading = false;

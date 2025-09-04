@@ -24,7 +24,7 @@ export const customerService = {
 export const customerListService = {
   getCustomerList: async () => {
     try {
-      const response = await axiosInstance.get("/api/v1/customer-list");
+      const response = await axiosInstance.get("/api/v1/customers/list");
       return handleApiResponse(response);
     } catch (error) {
       handleApiError(error);

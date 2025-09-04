@@ -1,19 +1,18 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Loading from "../components/atoms/Loading";
-import { Sidebar, Header } from "../components/organisms";
+import { Loading } from "../components/Elements";
+import { SidebarNav, HeaderBar } from "../components/Fragments";
 
 // Lazy loading
 const Customer = lazy(() => import("./Customer"));
 const DetailCustomer = lazy(() => import("./Customer/DetailCustomer"));
 const Dashboard = lazy(() => import("./Summary"));
 const Transaction = lazy(() => import("./Transaction"));
-const DetailSummary = lazy(() => import("./Transaction/DetailTransaction"));
+const DetailTransaction = lazy(() => import("./Transaction/DetailTransaction"));
 const Profile = lazy(() => import("./Profile"));
 const Login = lazy(() => import("./Auth/Login"));
 const Register = lazy(() => import("./Auth/Register"));
-const PrivateRoute = lazy(() => import("./PrivateRoute"));
 
 const Pages = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -28,13 +27,23 @@ const Pages = () => {
     return <Navigate to="/" replace />;
   }
 
+  const PrivateRoute = ({ children, isAuthenticated }) => {
+    const location = useLocation();
+
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+    return children;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sidebar dan Header */}
+      {/* Sidebar dan HeaderBar */}
       {isAuthenticated && !isPublicRoute && (
         <>
-          <Sidebar />
-          <Header />
+          <SidebarNav />
+          <HeaderBar />
         </>
       )}
 
@@ -45,8 +54,8 @@ const Pages = () => {
             ${
               !isPublicRoute && isAuthenticated
                 ? isCollapsed
-                  ? "lg:ml-16 pt-16"
-                  : "lg:ml-64 pt-16"
+                  ? "lg:ml-16 pt-18"
+                  : "lg:ml-64 pt-18"
                 : "ml-0"
             }
           `}
@@ -87,7 +96,7 @@ const Pages = () => {
 
             {/* Transaction Routes */}
             <Route
-              path="/transactions"
+              path="/transaction"
               element={
                 <PrivateRoute isAuthenticated={isAuthenticated}>
                   <Transaction />
@@ -95,10 +104,10 @@ const Pages = () => {
               }
             />
             <Route
-              path="/transactions/:referenceNo"
+              path="/transaction/detail/:referenceNo"
               element={
                 <PrivateRoute isAuthenticated={isAuthenticated}>
-                  <DetailSummary />
+                  <DetailTransaction />
                 </PrivateRoute>
               }
             />

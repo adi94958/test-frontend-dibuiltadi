@@ -1,8 +1,13 @@
-import { Avatar, TextInput } from "../../components/molecules";
-import { Button } from "../../components/molecules";
+import {
+  Avatar,
+  TextInput,
+  Button,
+  Text,
+  Modal,
+  Divider,
+  Card,
+} from "../../components/Elements";
 import { useSelector, useDispatch } from "react-redux";
-import { Text } from "../../components/atoms";
-import Modal from "../../components/molecules/Modal";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { changePasswordSchema } from "../../validation/authValidation";
@@ -100,32 +105,31 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 p-5">
       {/* Profile Content */}
-      <div className="w-full mx-auto p-6">
+      <Card variant="outline" padding="none" className="w-full mx-auto overflow-hidden">
         {/* Profile Header Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex mb-6 flex-col sm:flex-row justify-between">
-          <div className="p-6">
-            <div className="flex flex-row items-center space-y-0 space-x-6">
-              {/* Profile Avatar */}
-              <div className="relative">
-                <Avatar
-                  profileImage={user?.profileImage}
-                  name={user?.name || "User"}
-                  size="2xl"
-                />
-              </div>
+        <div className="flex flex-col sm:flex-row justify-between p-4 sm:p-6">
+          <div className="flex flex-row items-center space-y-0 space-x-4 sm:space-x-6 mb-4 sm:mb-0">
+            {/* Profile Avatar */}
+            <div className="relative">
+              <Avatar
+                profileImage={user?.profileImage}
+                name={user?.name || "User"}
+                size="2xl"
+              />
+            </div>
 
-              {/* User Info */}
-              <div className="flex-1">
-                <div>
-                  <Text variant="subheading">{user?.name}</Text>
-                  <Text variant="caption">{user?.roleName}</Text>
-                </div>
+            {/* User Info */}
+            <div className="flex-1">
+              <div>
+                <Text variant="subheading">{user?.name}</Text>
+                <Text variant="caption">{user?.roleName}</Text>
               </div>
             </div>
           </div>
-          <div className="flex justify-end items-center p-6">
+
+          <div className="flex justify-end items-center">
             <Button
               variant="outline"
               className="justify-center w-full sm:w-auto"
@@ -136,16 +140,14 @@ const ProfilePage = () => {
           </div>
         </div>
 
+        {/* Full Width Divider */}
+        <Divider thickness="1px" color="bg-gray-200" />
+
         {/* Profile Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
           {/* Personal Information */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Personal Information
-              </h2>
-            </div>
-            <div className="p-6 space-y-4">
+          <Card variant="outline" heading="Personal Information">
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Full Name
@@ -171,16 +173,11 @@ const ProfilePage = () => {
                 <p className="text-gray-900">{user?.code || "-"}</p>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Work Information */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Role & Access Information
-              </h2>
-            </div>
-            <div className="p-6 space-y-4">
+          <Card variant="outline" heading="Role & Access Information">
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Role Name
@@ -194,7 +191,7 @@ const ProfilePage = () => {
                 <p className="text-gray-900">{user?.roleCode || "-"}</p>
               </div>
             </div>
-          </div>
+          </Card>
 
           {/* Modal Changes Password with Nested Components */}
           {isModalOpen && (
@@ -266,7 +263,7 @@ const ProfilePage = () => {
             </Modal.Backdrop>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

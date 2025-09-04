@@ -13,7 +13,7 @@ const Button = ({
   // Style dasar untuk semua button
   const baseStyle = `
     inline-flex items-center justify-center font-medium 
-    transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 
+    transition-all duration-200 focus:outline-none 
     disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
   `;
 
@@ -34,27 +34,27 @@ const Button = ({
     const colors = {
       primary: {
         solid:
-          "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 active:bg-blue-800",
+          "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800",
         outline:
-          "border-2 border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500 hover:border-blue-700 active:bg-blue-100",
+          "border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:border-blue-700 active:bg-blue-100",
       },
       secondary: {
         solid:
-          "bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500 active:bg-gray-800",
+          "bg-gray-600 text-white hover:bg-gray-700 active:bg-gray-800",
         outline:
-          "border-2 border-gray-600 text-gray-600 hover:bg-gray-50 focus:ring-gray-500 hover:border-gray-700 active:bg-gray-100",
+          "border-2 border-gray-600 text-gray-600 hover:bg-gray-50 hover:border-gray-700 active:bg-gray-100",
       },
       success: {
         solid:
-          "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 active:bg-green-800",
+          "bg-green-600 text-white hover:bg-green-700 active:bg-green-800",
         outline:
-          "border-2 border-green-600 text-green-600 hover:bg-green-50 focus:ring-green-500 hover:border-green-700 active:bg-green-100",
+          "border-2 border-green-600 text-green-600 hover:bg-green-50 hover:border-green-700 active:bg-green-100",
       },
       danger: {
         solid:
-          "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 active:bg-red-800",
+          "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
         outline:
-          "border-2 border-red-600 text-red-600 hover:bg-red-50 focus:ring-red-500 hover:border-red-700 active:bg-red-100",
+          "border-2 border-red-600 text-red-600 hover:bg-red-50 hover:border-red-700 active:bg-red-100",
       },
     };
 
@@ -66,12 +66,28 @@ const Button = ({
     return rounded ? "rounded-full" : "rounded-lg";
   };
 
+  // Adjust size for icon-only buttons
+  const getIconSize = () => {
+    if (icon && !children) {
+      switch (size) {
+        case "sm":
+          return "w-8 h-8"; // Small size
+        case "lg":
+          return "w-12 h-12"; // Large size
+        default:
+          return "w-10 h-10"; // Medium size
+      }
+    }
+    return "";
+  };
+
   // Gabungkan semua style
   const buttonStyle = `
     ${baseStyle}
     ${getSize()}
     ${getColorStyle()}
     ${getBorderRadius()}
+    ${getIconSize()}
     ${icon && children ? "gap-2" : ""}
     ${className}
   `

@@ -22,7 +22,6 @@ export const useSidebar = () => {
     toggleMobileMenu: () => dispatch(toggleMobileMenu()),
     setMobileMenuOpen: (open) => dispatch(setMobileMenuOpen(open)),
     closeMobileMenu: () => dispatch(closeMobileMenu()),
-    // Aliases untuk kompatibilitas
     setIsCollapsed: (collapsed) => dispatch(setSidebarCollapsed(collapsed)),
     setIsMobileMenuOpen: (open) => dispatch(setMobileMenuOpen(open)),
   };

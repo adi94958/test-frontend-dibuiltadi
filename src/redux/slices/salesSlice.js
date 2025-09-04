@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { salesService } from "../../services/apis/provinceService";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { salesService } from "../../services/apis/salesCodeService";
 
+// Async Thunk for get sales list
 export const getSales = createAsyncThunk(
   "sales/getSales",
   async (_, { rejectWithValue }) => {
@@ -17,10 +18,10 @@ export const getSales = createAsyncThunk(
   }
 );
 
-const salesCodeSlice = createSlice({
-  name: "salesCode",
+const salesSlice = createSlice({
+  name: "sales",
   initialState: {
-    sales: [],
+    salesList: [],
     loading: false,
     error: null,
   },
@@ -37,7 +38,7 @@ const salesCodeSlice = createSlice({
       })
       .addCase(getSales.fulfilled, (state, action) => {
         state.loading = false;
-        state.sales = action.payload;
+        state.salesList = action.payload.items || [];
       })
       .addCase(getSales.rejected, (state, action) => {
         state.loading = false;
@@ -46,5 +47,5 @@ const salesCodeSlice = createSlice({
   },
 });
 
-export const { clearError } = salesCodeSlice.actions;
-export default salesCodeSlice.reducer;
+export const { clearError } = salesSlice.actions;
+export default salesSlice.reducer;
