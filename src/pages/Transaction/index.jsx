@@ -139,8 +139,8 @@ const TransactionPage = () => {
       render: (value) => <Text variant="caption">{formatDate(value)}</Text>,
     },
     {
-      key: "actions",
-      title: "Actions",
+      key: "action",
+      title: "Action",
       width: "6%",
       render: (value, row) => (
         <Button

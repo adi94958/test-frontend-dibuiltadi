@@ -6,13 +6,15 @@ import { SidebarNav, HeaderBar } from "../components/Fragments";
 
 // Lazy loading
 const Customer = lazy(() => import("./Customer"));
-const DetailCustomer = lazy(() => import("./Customer/DetailCustomer"));
+const DetailCustomer = lazy(() => import("./Customer/detailCustomer"));
+const AddCustomer = lazy(() => import("./Customer/addCustomer"));
+const EditCustomer = lazy(() => import("./Customer/editCustomer"));
 const Dashboard = lazy(() => import("./Summary"));
 const Transaction = lazy(() => import("./Transaction"));
-const DetailTransaction = lazy(() => import("./Transaction/DetailTransaction"));
+const DetailTransaction = lazy(() => import("./Transaction/detailTransaction"));
 const Profile = lazy(() => import("./Profile"));
-const Login = lazy(() => import("./Auth/Login"));
-const Register = lazy(() => import("./Auth/Register"));
+const Login = lazy(() => import("./Auth/login"));
+const Register = lazy(() => import("./Auth/register"));
 
 const Pages = () => {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -86,10 +88,26 @@ const Pages = () => {
               }
             />
             <Route
-              path="/customers/:code"
+              path="/customers/detail/:code"
               element={
                 <PrivateRoute isAuthenticated={isAuthenticated}>
                   <DetailCustomer />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/customers/edit/:code"
+              element={
+                <PrivateRoute isAuthenticated={isAuthenticated}>
+                  <EditCustomer />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              pat="/customers/add"
+              element={
+                <PrivateRoute isAuthenticated={isAuthenticated}>
+                  <AddCustomer />
                 </PrivateRoute>
               }
             />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { FunnelIcon } from "@heroicons/react/24/outline";
+import { FunnelIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { getAllCustomers, clearError } from "../../redux/slices/customerSlice";
 import {
   Button,
@@ -137,14 +137,14 @@ const CustomerPage = () => {
             size="sm"
             color="primary"
             icon={<EyeIcon className="w-4 h-4" />}
-            onClick={() => navigate(`/customer/detail/${row.code}`)}
+            onClick={() => navigate(`/customers/detail/${row.code}`)}
           />
           <Button
             variant="outline"
             size="sm"
             color="success"
             icon={<PencilIcon className="w-4 h-4" />}
-            onClick={() => console.log("Update", row.code)}
+            onClick={() => navigate(`/customers/edit/${row.code}`)}
           />
         </div>
       ),
@@ -194,6 +194,14 @@ const CustomerPage = () => {
             >
               <FunnelIcon className="w-4 h-4" />
               {showFilters ? "Hide Filters" : "Show Filters"}
+            </Button>
+            <Button
+              variant="solid"
+              onClick={() => navigate("/customers/add")}
+              className="flex items-center gap-2"
+            >
+              <PlusCircleIcon className="w-6 h-6" />
+              Add Customer
             </Button>
           </div>
         </div>

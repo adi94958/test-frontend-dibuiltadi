@@ -1,110 +1,259 @@
-import { MainLayout } from "../../components/Layouts";
-import { Card, Text, Avatar, Button, Badge } from "../../components/Elements";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { MainLayout } from "../../components/Layouts";
+import {
+  Card,
+  Text,
+  Divider,
+  Loading,
+  Button,
+} from "../../components/Elements";
+import {
+  getCustomerDetail,
+  clearCustomerDetail,
+  clearError,
+} from "../../redux/slices/customerSlice";
+import { formatDate } from "../../utils/formatHelpers";
 
-const CustomerDetailPage = () => {
+const DetailCustomerPage = () => {
   const { code } = useParams();
+  const dispatch = useDispatch();
+  const { customerDetail, loading, error } = useSelector(
+    (state) => state.customer
+  );
+
+  useEffect(() => {
+    if (code) {
+      dispatch(getCustomerDetail(code));
+    }
+    return () => {
+      dispatch(clearCustomerDetail());
+    };
+  }, [dispatch, code]);
 
   const breadcrumbItems = [
-    { label: "Customer Management", href: "/customers" },
-    { label: `Customer ${code}` }
+    { label: "Customer Management", href: "/customer" },
+    { label: `Detail Customer`, href: `/customer/detail/${code}` },
   ];
 
-  // Dummy customer data
-  const customerData = {
-    code: code,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+62 812-3456-7890",
-    address: "Jl. Sudirman No. 123, Jakarta Pusat",
-    joinDate: "2024-01-15",
-    status: "Active",
-    totalTransactions: 25,
-    totalSpent: "Rp 15,250,000"
-  };
+  if (loading) {
+    return (
+      <MainLayout title="Customer Detail" breadcrumbItems={breadcrumbItems}>
+        <div className="flex items-center justify-center py-12">
+          <Loading size="md" />
+          <Text variant="body" className="ml-3">
+            Loading customer detail...
+          </Text>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout title="Customer Detail" breadcrumbItems={breadcrumbItems}>
+        <div className="flex items-center justify-center py-12">
+          <Text variant="body" color="danger">
+            {typeof error === "string" ? error : "Something went wrong"}
+          </Text>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => dispatch(clearError())}
+            className="ml-4"
+          >
+            Dismiss
+          </Button>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!customerDetail) {
+    return (
+      <MainLayout title="Customer Detail" breadcrumbItems={breadcrumbItems}>
+        <div className="flex items-center justify-center py-12">
+          <Text variant="body">No customer data found.</Text>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
-    <MainLayout 
-      title={`Customer Detail - ${customerData.name}`} 
-      breadcrumbItems={breadcrumbItems}
-    >
+    <MainLayout title="Customer Detail" breadcrumbItems={breadcrumbItems}>
       <div className="space-y-6">
-        {/* Customer Profile Card */}
-        <Card variant="outline" heading="Customer Profile">
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <Avatar 
-              name={customerData.name} 
-              size="2xl"
-            />
-            <div className="flex-1">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Text variant="caption" color="gray" className="font-medium">Customer Code</Text>
-                  <Text variant="body" color="dark">{customerData.code}</Text>
-                </div>
-                <div>
-                  <Text variant="caption" color="gray" className="font-medium">Status</Text>
-                  <Badge variant="success" size="sm">
-                    {customerData.status}
-                  </Badge>
-                </div>
-                <div>
-                  <Text variant="caption" color="gray" className="font-medium">Email</Text>
-                  <Text variant="body" color="dark">{customerData.email}</Text>
-                </div>
-                <div>
-                  <Text variant="caption" color="gray" className="font-medium">Phone</Text>
-                  <Text variant="body" color="dark">{customerData.phone}</Text>
-                </div>
-                <div className="md:col-span-2">
-                  <Text variant="caption" color="gray" className="font-medium">Address</Text>
-                  <Text variant="body" color="dark">{customerData.address}</Text>
-                </div>
+        <Card variant="outline" className="p-6">
+          <div className="mb-6">
+            <Text variant="subheading" className="mb-2">
+              Customer #{customerDetail.code}
+            </Text>
+            <Text variant="caption" color="secondary">
+              Created on {formatDate(customerDetail.createdAt)}
+            </Text>
+          </div>
+          <Divider />
+
+          {/* Informasi Utama */}
+          <div className="mt-6">
+            <Text
+              variant="caption"
+              color="secondary"
+              className="uppercase font-semibold mb-2 block"
+            >
+              Main Information
+            </Text>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Text variant="caption" color="secondary">
+                  Name
+                </Text>
+                <Text variant="body">{customerDetail.name || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Type
+                </Text>
+                <Text variant="body">{customerDetail.type || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Company Type
+                </Text>
+                <Text variant="body">{customerDetail.companyType || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Identity No
+                </Text>
+                <Text variant="body">{customerDetail.identityNo || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  NPWP
+                </Text>
+                <Text variant="body">{customerDetail.npwp || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Group
+                </Text>
+                <Text variant="body">{customerDetail.group.name || "-"}</Text>
               </div>
             </div>
           </div>
-        </Card>
 
-        {/* Customer Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card variant="outline" heading="Join Date">
-            <Text variant="title" color="dark" className="font-bold">
-              {new Date(customerData.joinDate).toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+          <Divider className="my-6" />
+
+          {/* Kontak */}
+          <div>
+            <Text
+              variant="caption"
+              color="secondary"
+              className="uppercase font-semibold mb-2 block"
+            >
+              Contact
             </Text>
-          </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Text variant="caption" color="secondary">
+                  Email
+                </Text>
+                <Text variant="body">{customerDetail.email || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Phone
+                </Text>
+                <Text variant="body">{customerDetail.phone || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Mobile Phone
+                </Text>
+                <Text variant="body">{customerDetail.mobilePhone || "-"}</Text>
+              </div>
+            </div>
+          </div>
 
-          <Card variant="outline" heading="Total Transactions">
-            <Text variant="title" color="dark" className="font-bold">
-              {customerData.totalTransactions}
+          <Divider className="my-6" />
+
+          {/* Alamat */}
+          <div>
+            <Text
+              variant="caption"
+              color="secondary"
+              className="uppercase font-semibold mb-2 block"
+            >
+              Address
             </Text>
-          </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Text variant="caption" color="secondary">
+                  Area
+                </Text>
+                <Text variant="body">{customerDetail.area || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Province
+                </Text>
+                <Text variant="body">
+                  {customerDetail.province?.name || "-"}
+                </Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  City
+                </Text>
+                <Text variant="body">{customerDetail.city?.name || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Address
+                </Text>
+                <Text variant="body">{customerDetail.address || "-"}</Text>
+              </div>
+            </div>
+          </div>
 
-          <Card variant="outline" heading="Total Spent">
-            <Text variant="title" color="dark" className="font-bold text-green-600">
-              {customerData.totalSpent}
+          <Divider className="my-6" />
+
+          {/* Status & Target */}
+          <div>
+            <Text
+              variant="caption"
+              color="secondary"
+              className="uppercase font-semibold mb-2 block"
+            >
+              Status & Target
             </Text>
-          </Card>
-        </div>
-
-        {/* Actions */}
-        <Card variant="outline" heading="Actions">
-          <div className="flex flex-wrap gap-3">
-            <Button variant="primary">
-              Edit Customer
-            </Button>
-            <Button variant="outline">
-              View Transactions
-            </Button>
-            <Button variant="outline">
-              Send Message
-            </Button>
-            <Button variant="outline" className="text-red-600 border-red-300 hover:bg-red-50">
-              Deactivate Customer
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Text variant="caption" color="secondary">
+                  Status
+                </Text>
+                <Text variant="body">{customerDetail.status || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Target
+                </Text>
+                <Text variant="body">{customerDetail.target || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Achievement
+                </Text>
+                <Text variant="body">{customerDetail.achievement || "-"}</Text>
+              </div>
+              <div>
+                <Text variant="caption" color="secondary">
+                  Percentage
+                </Text>
+                <Text variant="body">{customerDetail.percentage || "-"}</Text>
+              </div>
+            </div>
           </div>
         </Card>
       </div>
@@ -112,4 +261,4 @@ const CustomerDetailPage = () => {
   );
 };
 
-export default CustomerDetailPage;
+export default DetailCustomerPage;

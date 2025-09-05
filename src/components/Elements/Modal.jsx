@@ -1,4 +1,5 @@
-// Modal Backdrop Component
+import { Text } from "../Elements";
+
 const ModalBackdrop = ({ onClick, children }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -33,11 +34,11 @@ const ModalContainer = ({ size = "md", children }) => {
 const ModalHeader = ({ onClose, children }) => {
   return (
     <div className="flex items-center justify-between p-6 border-b border-gray-200">
-      <h2 className="text-xl font-semibold text-gray-900">{children}</h2>
+      <Text variant="title">{children}</Text>
       {onClose && (
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
         >
           <svg
             className="w-6 h-6"
