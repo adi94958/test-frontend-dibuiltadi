@@ -7,6 +7,7 @@ import {
   Divider,
   Card,
 } from "../../components/Elements";
+import { MainLayout } from "../../components/Layouts";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
@@ -104,167 +105,193 @@ const ProfilePage = () => {
     }
   };
 
+  // Breadcrumb items
+  const breadcrumbItems = [{ label: "Profile" }];
+
   return (
-    <div className="min-h-screen bg-gray-50 p-5">
-      {/* Profile Content */}
-      <Card variant="outline" padding="none" className="w-full mx-auto overflow-hidden">
-        {/* Profile Header Card */}
-        <div className="flex flex-col sm:flex-row justify-between p-4 sm:p-6">
-          <div className="flex flex-row items-center space-y-0 space-x-4 sm:space-x-6 mb-4 sm:mb-0">
-            {/* Profile Avatar */}
-            <div className="relative">
-              <Avatar
-                profileImage={user?.profileImage}
-                name={user?.name || "User"}
-                size="2xl"
-              />
-            </div>
-
-            {/* User Info */}
-            <div className="flex-1">
-              <div>
-                <Text variant="subheading">{user?.name}</Text>
-                <Text variant="caption">{user?.roleName}</Text>
-              </div>
+    <MainLayout
+      title="Profile"
+      breadcrumbItems={breadcrumbItems}
+      showBreadcrumb={true}
+    >
+      {/* Profile Header Card */}
+      <Card variant="outline" padding="lg" className="mb-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Avatar
+              profileImage={user?.profileImage}
+              name={user?.name || "User"}
+              size="2xl"
+            />
+            <div>
+              <Text variant="heading" className="text-xl font-semibold mb-1">
+                {user?.name || "User"}
+              </Text>
+              <Text variant="body" color="muted">
+                {user?.roleName || "Role"}
+              </Text>
             </div>
           </div>
-
-          <div className="flex justify-end items-center">
-            <Button
-              variant="outline"
-              className="justify-center w-full sm:w-auto"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Change Password
-            </Button>
-          </div>
-        </div>
-
-        {/* Full Width Divider */}
-        <Divider thickness="1px" color="bg-gray-200" />
-
-        {/* Profile Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
-          {/* Personal Information */}
-          <Card variant="outline" heading="Personal Information">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name
-                </label>
-                <p className="text-gray-900">{user?.name || "-"}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
-                </label>
-                <p className="text-gray-900">{user?.email || "-"}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number
-                </label>
-                <p className="text-gray-900">{user?.phone || "-"}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  User Code
-                </label>
-                <p className="text-gray-900">{user?.code || "-"}</p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Work Information */}
-          <Card variant="outline" heading="Role & Access Information">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Role Name
-                </label>
-                <p className="text-gray-900">{user?.roleName || "-"}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Role Code
-                </label>
-                <p className="text-gray-900">{user?.roleCode || "-"}</p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Modal Changes Password with Nested Components */}
-          {isModalOpen && (
-            <Modal.Backdrop onClick={handleCloseModal}>
-              <Modal.Container size="md">
-                <Modal.Header onClose={handleCloseModal}>
-                  Change Password
-                </Modal.Header>
-                <Modal.Body>
-                  <form onSubmit={handleSubmit} id="changePasswordForm">
-                    <div className="space-y-4">
-                      <div>
-                        <TextInput
-                          name="currentPassword"
-                          type="password"
-                          label="Current Password"
-                          value={formik.values.currentPassword}
-                          onChange={formik.handleChange}
-                          error={formik.errors.currentPassword}
-                          touched={formik.touched.currentPassword}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <TextInput
-                          name="newPassword"
-                          type="password"
-                          label="New Password"
-                          value={formik.values.newPassword}
-                          onChange={formik.handleChange}
-                          error={formik.errors.newPassword}
-                          touched={formik.touched.newPassword}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <TextInput
-                          name="confirmPassword"
-                          type="password"
-                          label="Confirm New Password"
-                          value={formik.values.confirmPassword}
-                          onChange={formik.handleChange}
-                          error={formik.errors.confirmPassword}
-                          touched={formik.touched.confirmPassword}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </form>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button
-                    variant="outline"
-                    onClick={handleCloseModal}
-                    disabled={loading}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    form="changePasswordForm"
-                    variant="primary"
-                    disabled={loading}
-                  >
-                    {loading ? "Updating..." : "Update Password"}
-                  </Button>
-                </Modal.Footer>
-              </Modal.Container>
-            </Modal.Backdrop>
-          )}
+          <Button
+            variant="outline"
+            onClick={() => setIsModalOpen(true)}
+            className="w-full md:w-auto"
+          >
+            Change Password
+          </Button>
         </div>
       </Card>
-    </div>
+
+      {/* Profile Details - 2 Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Personal Information */}
+        <Card variant="outline" heading="Personal Information" padding="lg">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Text variant="caption" color="muted" className="mb-2">
+                  Full Name
+                </Text>
+                <Text variant="body" className="font-medium">
+                  {user?.name || "-"}
+                </Text>
+              </div>
+              <div>
+                <Text variant="caption" color="muted" className="mb-2">
+                  User Code
+                </Text>
+                <Text variant="body" className="font-medium">
+                  {user?.code || "-"}
+                </Text>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Text variant="caption" color="muted" className="mb-2">
+                  Email Address
+                </Text>
+                <Text variant="body" className="font-medium break-all">
+                  {user?.email || "-"}
+                </Text>
+              </div>
+              <div>
+                <Text variant="caption" color="muted" className="mb-2">
+                  Phone Number
+                </Text>
+                <Text variant="body" className="font-medium">
+                  {user?.phone || "-"}
+                </Text>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Role & Access Information */}
+        <Card
+          variant="outline"
+          heading="Role & Access Information"
+          padding="lg"
+        >
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Text variant="caption" color="muted" className="mb-2">
+                  Role Name
+                </Text>
+                <Text variant="body" className="font-medium">
+                  {user?.roleName || "-"}
+                </Text>
+              </div>
+              <div>
+                <Text variant="caption" color="muted" className="mb-2">
+                  Role Code
+                </Text>
+                <Text variant="body" className="font-medium">
+                  {user?.roleCode || "-"}
+                </Text>
+              </div>
+            </div>
+
+            {/* Additional space for future role-related info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Text variant="caption" color="muted" className="mb-2">
+                  Status
+                </Text>
+                <Text variant="body" className="font-medium text-green-600">
+                  Active
+                </Text>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Modal Change Password */}
+      {isModalOpen && (
+        <Modal.Backdrop onClick={handleCloseModal}>
+          <Modal.Container size="md">
+            <Modal.Header onClose={handleCloseModal}>
+              Change Password
+            </Modal.Header>
+            <Modal.Body>
+              <form onSubmit={handleSubmit} id="changePasswordForm">
+                <div className="space-y-4">
+                  <TextInput
+                    name="currentPassword"
+                    type="password"
+                    label="Current Password"
+                    value={formik.values.currentPassword}
+                    onChange={formik.handleChange}
+                    error={formik.errors.currentPassword}
+                    touched={formik.touched.currentPassword}
+                    required
+                  />
+                  <TextInput
+                    name="newPassword"
+                    type="password"
+                    label="New Password"
+                    value={formik.values.newPassword}
+                    onChange={formik.handleChange}
+                    error={formik.errors.newPassword}
+                    touched={formik.touched.newPassword}
+                    required
+                  />
+                  <TextInput
+                    name="confirmPassword"
+                    type="password"
+                    label="Confirm New Password"
+                    value={formik.values.confirmPassword}
+                    onChange={formik.handleChange}
+                    error={formik.errors.confirmPassword}
+                    touched={formik.touched.confirmPassword}
+                    required
+                  />
+                </div>
+              </form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="outline"
+                onClick={handleCloseModal}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                form="changePasswordForm"
+                variant="primary"
+                disabled={loading}
+              >
+                {loading ? "Updating..." : "Update Password"}
+              </Button>
+            </Modal.Footer>
+          </Modal.Container>
+        </Modal.Backdrop>
+      )}
+    </MainLayout>
   );
 };
 

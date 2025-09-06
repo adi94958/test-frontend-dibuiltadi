@@ -19,6 +19,15 @@ export const customerService = {
       handleApiError(error);
     }
   },
+
+  updateCustomer: async (code, customerData) => {
+    try {
+      const response = await axiosInstance.put(`/api/v1/customers/${code}`, customerData);
+      return handleApiResponse(response);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
 };
 
 export const customerListService = {

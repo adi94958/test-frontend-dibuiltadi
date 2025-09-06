@@ -72,6 +72,23 @@ export const storeCustomer = createAsyncThunk(
   }
 );
 
+// Async Thunk for update customer
+export const updateCustomer = createAsyncThunk(
+  "customer/updateCustomer",
+  async ({ code, customerData }, { rejectWithValue }) => {
+    try {
+      const response = await customerService.updateCustomer(code, customerData);
+      return response;
+    } catch (err) {
+      if (err.response && err.response.data) {
+        return rejectWithValue(err.response.data);
+      } else {
+        return rejectWithValue(err.message);
+      }
+    }
+  }
+);
+
 const customerSlice = createSlice({
   name: "customer",
   initialState: {
@@ -81,6 +98,7 @@ const customerSlice = createSlice({
     pagination: null,
     loading: false,
     error: null,
+    message: null,
   },
   reducers: {
     clearError(state) {
@@ -100,6 +118,7 @@ const customerSlice = createSlice({
       .addCase(getCustomerList.fulfilled, (state, action) => {
         state.loading = false;
         state.customerList = action.payload.items || [];
+        state.message = action.payload.responseMessage || null;
       })
       .addCase(getCustomerList.rejected, (state, action) => {
         state.loading = false;
@@ -112,18 +131,20 @@ const customerSlice = createSlice({
       })
       .addCase(getAllCustomers.fulfilled, (state, action) => {
         state.loading = false;
-        // Response structure: { responseCode, responseMessage, items }
+        state.message = action.payload.responseMessage || null;
         const response = action.payload;
-        
+
         if (response && response.items) {
           state.customers = response.items;
-          
+
           // Since API doesn't return pagination info, calculate it
           state.pagination = {
             currentPage: action.meta.arg?.page || 1,
-            lastPage: Math.ceil(response.total / (action.meta.arg?.perPage || 10)),
+            lastPage: Math.ceil(
+              response.total / (action.meta.arg?.perPage || 10)
+            ),
             perPage: action.meta.arg?.perPage || 10,
-            total: response.total, // Use total from API response
+            total: response.total,
           };
         } else {
           state.customers = [];
@@ -147,10 +168,40 @@ const customerSlice = createSlice({
       .addCase(getCustomerDetail.fulfilled, (state, action) => {
         state.loading = false;
         state.customerDetail = action.payload;
+        state.message = action.payload.responseMessage || null;
       })
       .addCase(getCustomerDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // Update Customer
+      .addCase(updateCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.customerDetail = action.payload;
+        state.message = action.payload.responseMessage || null;
+      })
+      .addCase(updateCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.message = action.payload.responseMessage || null;
+      })
+      // Store Customer
+      .addCase(storeCustomer.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(storeCustomer.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.responseMessage || null;
+      })
+      .addCase(storeCustomer.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.message = action.payload.responseMessage || null;
       });
   },
 });

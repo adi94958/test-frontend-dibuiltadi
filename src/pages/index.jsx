@@ -6,7 +6,7 @@ import { SidebarNav, HeaderBar } from "../components/Fragments";
 
 // Lazy loading
 const Customer = lazy(() => import("./Customer"));
-const DetailCustomer = lazy(() => import("./Customer/detailCustomer"));
+const DetailCustomer = lazy(() => import("./Customer/DetailCustomer"));
 const AddCustomer = lazy(() => import("./Customer/addCustomer"));
 const EditCustomer = lazy(() => import("./Customer/editCustomer"));
 const Dashboard = lazy(() => import("./Summary"));
@@ -17,7 +17,8 @@ const Login = lazy(() => import("./Auth/login"));
 const Register = lazy(() => import("./Auth/register"));
 
 const Pages = () => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  //const { isAuthenticated } = useSelector((state) => state.auth);
+  const isAuthenticated = true; // Hardcoded for testing purposes
   const isCollapsed = useSelector((state) => state.sidebar.isCollapsed);
   const location = useLocation();
 
@@ -104,7 +105,7 @@ const Pages = () => {
               }
             />
             <Route
-              pat="/customers/add"
+              path="/customers/add"
               element={
                 <PrivateRoute isAuthenticated={isAuthenticated}>
                   <AddCustomer />

@@ -42,7 +42,7 @@ const DataTable = ({
       {/* Responsive Table with Horizontal Scroll */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50border-t border-gray-300">
+          <thead className="bg-gray-50 border-t border-gray-300">
             <tr>
               {columns.map((column) => (
                 <th

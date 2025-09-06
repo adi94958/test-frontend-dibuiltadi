@@ -29,15 +29,6 @@ const Card = ({
     xl: "p-10",
   };
 
-  // Get padding value untuk divider margin
-  const paddingValue = {
-    none: "0px",
-    sm: "1rem", // 16px
-    default: "1.5rem", // 24px
-    lg: "2rem", // 32px
-    xl: "2.5rem", // 40px
-  };
-
   // Rounded options
   const roundedStyles = {
     none: "",
@@ -51,7 +42,7 @@ const Card = ({
   const cardClasses = [
     baseStyles,
     variantStyles[variant],
-    paddingStyles[padding],
+    // paddingStyles[padding],
     roundedStyles[rounded],
     onClick ? "cursor-pointer" : "",
     className,
@@ -63,23 +54,16 @@ const Card = ({
     <div className={cardClasses} onClick={onClick} {...props}>
       {heading && (
         <>
-          <div className="mb-4">
+          <div className={paddingStyles[padding]}>
             <Text variant="heading" color="dark">
               {heading}
             </Text>
           </div>
-          <div
-            className="mb-4"
-            style={{
-              marginLeft: `-${paddingValue[padding]}`,
-              marginRight: `-${paddingValue[padding]}`,
-            }}
-          >
-            <Divider thickness="1px" />
-          </div>
+
+          <Divider thickness="1px" />
         </>
       )}
-      {children}
+      <div className={paddingStyles[padding]}>{children}</div>
     </div>
   );
 };
