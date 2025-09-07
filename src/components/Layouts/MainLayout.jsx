@@ -6,6 +6,7 @@ const MainLayout = ({
   breadcrumbItems = [],
   showBreadcrumb = true,
   className = "",
+  caption,
 }) => {
   return (
     <div className={`min-h-screen bg-gray-50 ${className}`}>
@@ -29,6 +30,11 @@ const MainLayout = ({
               >
                 {title}
               </Text>
+              {caption && (
+                <Text variant="body" className="mt-2">
+                  {caption}
+                </Text>
+              )}
             </div>
           </div>
         </div>

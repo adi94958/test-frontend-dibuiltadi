@@ -1,54 +1,143 @@
+import {
+  Button,
+  Card,
+  SelectInput,
+  Text,
+  TextInput,
+} from "../../components/Elements";
 import { MainLayout } from "../../components/Layouts";
+import { formatCurrency } from "../../utils/formatHelpers";
 
 const SummaryPage = () => {
   const breadcrumbItems = [];
 
   return (
-    <MainLayout title="Dashboard Overview" breadcrumbItems={breadcrumbItems}>
-      {/* Dashboard Content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Stats Cards */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Total Users
-          </h3>
-          <p className="text-3xl font-bold text-blue-600">1,234</p>
-          <p className="text-sm text-gray-500 mt-1">+12% from last month</p>
+    <MainLayout
+      title="Dashboard Overview"
+      caption="Transaction Summary"
+      breadcrumbItems={breadcrumbItems}
+    >
+      <div className="space-y-7">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Stats Cards */}
+          <Card variant="solid">
+            <Text variant="subheading" className="text-gray-900 mb-2">
+              Daily Total
+            </Text>
+            <Text variant="heading" className="truncate">
+              {formatCurrency("10000000000000")}
+            </Text>
+            <Text variant="body" color="secondary" className="mt-1">
+              +1% from last day
+            </Text>
+          </Card>
+          <Card variant="solid">
+            <Text variant="subheading" className="mb-2">
+              Monthly Total
+            </Text>
+            <Text variant="heading" color="primary" className="truncate">
+              {formatCurrency("10000000000000")}
+            </Text>
+            <Text variant="body" color="secondary" className="mt-1">
+              +1% from last month
+            </Text>
+          </Card>
+          <Card variant="solid">
+            <Text variant="subheading" className="mb-2">
+              Yearly Total
+            </Text>
+            <Text
+              variant="heading"
+              color="danger"
+              className="font-bold truncate"
+            >
+              {formatCurrency("10000000000000")}
+            </Text>
+            <Text variant="body" color="secondary" className="mt-1">
+              +1% from last day
+            </Text>
+          </Card>
+          <Card variant="solid">
+            <Text variant="subheading" className="mb-2">
+              YoY Growth
+            </Text>
+            <Text
+              variant="heading"
+              color="success"
+              className="font-bold text-blue-600 truncate"
+            >
+              120%
+            </Text>
+            <Text variant="body" color="secondary" className="mt-1">
+              +1% from last day
+            </Text>
+          </Card>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Total Revenue
-          </h3>
-          <p className="text-3xl font-bold text-green-600">$45,678</p>
-          <p className="text-sm text-gray-500 mt-1">+8% from last month</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Orders</h3>
-          <p className="text-3xl font-bold text-purple-600">856</p>
-          <p className="text-sm text-gray-500 mt-1">+15% from last month</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Growth</h3>
-          <p className="text-3xl font-bold text-orange-600">23%</p>
-          <p className="text-sm text-gray-500 mt-1">+3% from last month</p>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Recent Activity
-          </h3>
-        </div>
-        <div className="p-6">
-          <p className="text-gray-500">
-            Dashboard content will be implemented here...
-          </p>
-        </div>
+        {/* Grafik Chart */}
+        <Card variant="solid" heading="Daily Transactions">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
+            <TextInput type="date" label="Start date" labelType="outside" />
+            <TextInput type="date" label="End date" labelType="outside" />
+            <Button variant="solid" className="mt-3">
+              Reset
+            </Button>
+          </div>
+          <div>
+            <Text variant="body" color="secondary">
+              Disini berupa grafik chart
+            </Text>
+          </div>
+        </Card>
+        <Card variant="solid" heading="Monthly Transactions">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
+            <TextInput type="month" label="Start month" labelType="outside" />
+            <TextInput type="month" label="End month" labelType="outside" />
+            <Button variant="solid" className="mt-3">
+              Reset
+            </Button>
+          </div>
+          <Text variant="body" color="secondary">
+            Disini berupa grafik chart
+          </Text>
+        </Card>
+        <Card variant="solid" heading="Yearly Transactions">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
+            <TextInput type="year" label="Start year" labelType="outside" />
+            <TextInput type="year" label="End year" labelType="outside" />
+            <Button variant="solid" className="mt-3">
+              Reset
+            </Button>
+          </div>
+          <Text variant="body" color="secondary">
+            Disini berupa grafik chart
+          </Text>
+        </Card>
+        <Card variant="solid" heading="Top Customers">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
+            <TextInput type="month" label="Start date" labelType="outside" />
+            <TextInput type="month" label="End date" labelType="outside" />
+            <SelectInput
+              id="limit"
+              name="limit"
+              label="Limit"
+              labelType="outside"
+              options={[
+                { value: "", label: "All" },
+                { value: "5", label: "5" },
+                { value: "10", label: "10" },
+                { value: "20", label: "20" },
+              ]}
+              className="sm:w-24"
+            />
+            <Button variant="solid" className="mt-3">
+              Reset
+            </Button>
+          </div>
+          <Text variant="body" color="secondary">
+            Disini berupa grafik chart
+          </Text>
+        </Card>
       </div>
     </MainLayout>
   );

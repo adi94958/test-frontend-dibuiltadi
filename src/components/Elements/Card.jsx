@@ -16,7 +16,7 @@ const Card = ({
 
   // Variant styles
   const variantStyles = {
-    solid: "bg-white border border-gray-100 shadow-lg",
+    solid: "bg-white border border-gray-100 shadow-sm",
     outline: "bg-transparent border border-gray-300",
   };
 
@@ -42,7 +42,6 @@ const Card = ({
   const cardClasses = [
     baseStyles,
     variantStyles[variant],
-    // paddingStyles[padding],
     roundedStyles[rounded],
     onClick ? "cursor-pointer" : "",
     className,
@@ -55,7 +54,7 @@ const Card = ({
       {heading && (
         <>
           <div className={paddingStyles[padding]}>
-            <Text variant="heading" color="dark">
+            <Text variant="subheading" color="dark">
               {heading}
             </Text>
           </div>
