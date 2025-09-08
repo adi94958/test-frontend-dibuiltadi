@@ -12,7 +12,6 @@ const ModalBackdrop = ({ onClick, children }) => {
   );
 };
 
-// Modal Container Component
 const ModalContainer = ({ size = "md", children }) => {
   const sizeClasses = {
     sm: "max-w-md",
@@ -30,7 +29,6 @@ const ModalContainer = ({ size = "md", children }) => {
   );
 };
 
-// Modal Header Component
 const ModalHeader = ({ onClose, children }) => {
   return (
     <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -59,12 +57,10 @@ const ModalHeader = ({ onClose, children }) => {
   );
 };
 
-// Modal Body Component
 const ModalBody = ({ children }) => {
   return <div className="p-6 overflow-y-auto max-h-[60vh]">{children}</div>;
 };
 
-// Modal Footer Component
 const ModalFooter = ({ children }) => {
   return (
     <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
@@ -73,7 +69,6 @@ const ModalFooter = ({ children }) => {
   );
 };
 
-// Main Modal Component with nested components
 const Modal = ({ isOpen, onClose, title, children, footer, size = "md" }) => {
   if (!isOpen) return null;
 
@@ -88,7 +83,6 @@ const Modal = ({ isOpen, onClose, title, children, footer, size = "md" }) => {
   );
 };
 
-// Attach nested components to Modal
 Modal.Backdrop = ModalBackdrop;
 Modal.Container = ModalContainer;
 Modal.Header = ModalHeader;

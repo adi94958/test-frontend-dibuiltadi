@@ -24,7 +24,6 @@ const AddCustomer = () => {
     (state) => state.city
   );
 
-  // Setup formik untuk add customer
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -40,11 +39,9 @@ const AddCustomer = () => {
     },
     validationSchema: addCustomerSchema,
     onSubmit: async (values) => {
-      // Filter empty optional fields
       const cleanData = Object.fromEntries(
         Object.entries(values).filter(
           ([key, value]) =>
-            // Required fields
             [
               "name",
               "provinceCode",
@@ -52,11 +49,9 @@ const AddCustomer = () => {
               "address",
               "companyType",
             ].includes(key) ||
-            // Optional fields with values
             (value && value.trim())
         )
       );
-
       try {
         await dispatch(storeCustomer(cleanData)).unwrap();
         setCreateSuccess(true);
@@ -72,7 +67,6 @@ const AddCustomer = () => {
     },
   });
 
-  // Handle success create
   useEffect(() => {
     if (createSuccess) {
       Swal.fire({
@@ -81,32 +75,22 @@ const AddCustomer = () => {
         icon: "success",
         confirmButtonText: "OK",
       });
-
       navigate("/customers");
       setCreateSuccess(false);
     }
   }, [createSuccess, message, navigate]);
-
-  // Fetch provinces and cities saat component mount
   useEffect(() => {
     dispatch(getProvinces());
     dispatch(getCities());
-
-    // Cleanup saat component unmount
     return () => {
       dispatch(clearError());
     };
   }, [dispatch]);
-
-  // Handle cancel
   const handleCancel = () => {
     navigate("/customers");
   };
-
-  // Handle submit dengan validasi
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const errors = await formik.validateForm();
     formik.setTouched(
       {
@@ -123,36 +107,28 @@ const AddCustomer = () => {
       },
       false
     );
-
-    // Submit jika tidak ada error
     if (Object.keys(errors).length === 0) {
       formik.handleSubmit(e);
     }
   };
-
-  // Breadcrumb items
   const breadcrumbItems = [
     { label: "Customer Management", href: "/customers" },
     { label: "Add Customer" },
   ];
-
-  // Prepare options for select inputs
   const provinceOptions = [
     { value: "", label: "Select Province" },
     ...provincesList.map((province) => ({
       value: province.code,
       label: province.name,
-    }))
+    })),
   ];
-
   const cityOptions = [
     { value: "", label: "Select City" },
     ...citiesList.map((city) => ({
       value: city.code,
       label: city.name,
-    }))
+    })),
   ];
-
   const companyTypeOptions = [
     { value: "", label: "Select Company Type" },
     { value: "person", label: "Person" },
@@ -174,7 +150,6 @@ const AddCustomer = () => {
         isSubmitting={loading}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Nama Customer - Required */}
           <div>
             <TextInput
               name="name"
@@ -187,8 +162,6 @@ const AddCustomer = () => {
               required
             />
           </div>
-
-          {/* Company Type - Required */}
           <div>
             <SelectInput
               name="companyType"
@@ -202,8 +175,6 @@ const AddCustomer = () => {
               required
             />
           </div>
-
-          {/* Nomor Identitas - Optional */}
           <div>
             <TextInput
               name="identityNo"
@@ -215,8 +186,6 @@ const AddCustomer = () => {
               touched={formik.touched.identityNo}
             />
           </div>
-
-          {/* NPWP - Optional */}
           <div>
             <TextInput
               name="npwp"
@@ -228,8 +197,6 @@ const AddCustomer = () => {
               touched={formik.touched.npwp}
             />
           </div>
-
-          {/* Email - Optional */}
           <div>
             <TextInput
               name="email"
@@ -242,8 +209,6 @@ const AddCustomer = () => {
               touched={formik.touched.email}
             />
           </div>
-
-          {/* Telepon - Optional */}
           <div>
             <TextInput
               name="phone"
@@ -255,8 +220,6 @@ const AddCustomer = () => {
               touched={formik.touched.phone}
             />
           </div>
-
-          {/* Mobile Phone - Optional */}
           <div>
             <TextInput
               name="mobile_phone"
@@ -268,8 +231,6 @@ const AddCustomer = () => {
               touched={formik.touched.mobile_phone}
             />
           </div>
-
-          {/* City - Required */}
           <div>
             <SelectInput
               name="cityCode"
@@ -284,8 +245,6 @@ const AddCustomer = () => {
               disabled={citiesLoading}
             />
           </div>
-
-          {/* Province - Required */}
           <div>
             <SelectInput
               name="provinceCode"
@@ -300,8 +259,6 @@ const AddCustomer = () => {
               disabled={provincesLoading}
             />
           </div>
-
-          {/* Address - Required - Full width */}
           <div>
             <TextInput
               name="address"

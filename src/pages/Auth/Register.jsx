@@ -1,4 +1,4 @@
-// pages/auth/RegisterPage.jsx
+ 
 import { useNavigate } from "react-router-dom";
 import { Loading, Button, TextInput } from "../../components/Elements";
 import AuthLayout from "../../components/Layouts/AuthLayout";
@@ -14,7 +14,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Setup formik dengan validasi
+  
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -55,11 +55,11 @@ const RegisterPage = () => {
     },
   });
 
-  // Handle submit - lebih sederhana
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validasi semua field sekaligus
+    
     const errors = await formik.validateForm();
     formik.setTouched(
       {
@@ -72,7 +72,7 @@ const RegisterPage = () => {
       false
     );
 
-    // Submit jika tidak ada error
+    
     if (Object.keys(errors).length === 0) {
       formik.handleSubmit(e);
     }
@@ -83,14 +83,14 @@ const RegisterPage = () => {
       title="Join Us Today"
       subtitle="Create your account and start your amazing journey"
     >
-      {/* Header */}
+      
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900">Register</h2>
       </div>
 
-      {/* Form */}
+      
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Input Name */}
+        
         <TextInput
           name="name"
           label="Full Name"
@@ -101,7 +101,7 @@ const RegisterPage = () => {
           touched={formik.touched.name}
         />
 
-        {/* Input Phone */}
+        
         <TextInput
           name="phone"
           label="Phone Number"
@@ -112,7 +112,7 @@ const RegisterPage = () => {
           touched={formik.touched.phone}
         />
 
-        {/* Input Email */}
+        
         <TextInput
           name="email"
           label="Email Address"
@@ -123,7 +123,7 @@ const RegisterPage = () => {
           touched={formik.touched.email}
         />
 
-        {/* Input Address */}
+        
         <TextInput
           name="address"
           label="Address"
@@ -134,7 +134,7 @@ const RegisterPage = () => {
           touched={formik.touched.address}
         />
 
-        {/* Input Password */}
+        
         <TextInput
           name="password"
           label="Password"
@@ -145,7 +145,7 @@ const RegisterPage = () => {
           touched={formik.touched.password}
         />
 
-        {/* Submit Button */}
+        
         <Button
           type="submit"
           size="lg"
@@ -166,7 +166,7 @@ const RegisterPage = () => {
         </Button>
       </form>
 
-      {/* Link Sign In */}
+
       <div className="text-center mt-8">
         <p className="text-gray-600">
           Already have an account?{" "}

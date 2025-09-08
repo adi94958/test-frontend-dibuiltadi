@@ -82,19 +82,13 @@ export const addCustomerSchema = yup.object().shape({
     .max(20, messages.mobilePhone.maxLength)
     .notRequired()
     .nullable(),
-  provinceCode: yup
-    .string()
-    .required(messages.provinceCode.required),
-  cityCode: yup
-    .string()
-    .required(messages.cityCode.required),
+  provinceCode: yup.string().required(messages.provinceCode.required),
+  cityCode: yup.string().required(messages.cityCode.required),
   address: yup
     .string()
     .required(messages.address.required)
-    .min(10, messages.address.minLength)
+    .min(3, messages.address.minLength)
     .max(200, messages.address.maxLength),
-  companyType: yup
-    .string()
-    .required(messages.companyType.required)
-    .oneOf(['person', 'company'], messages.companyType.invalid),
+  companyType: yup.string().required(messages.companyType.required),
+  //.oneOf(["person", "company"], messages.companyType.invalid),
 });

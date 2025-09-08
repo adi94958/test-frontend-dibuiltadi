@@ -5,25 +5,23 @@ const Text = ({
   className = "",
   ...props
 }) => {
-  // Variant untuk ukuran dan font weight
   const getVariantClasses = () => {
     switch (variant) {
       case "heading":
-        return "text-3xl font-bold";
+        return "text-xl sm:text-2xl lg:text-3xl font-bold leading-tight";
       case "subheading":
-        return "text-xl font-semibold";
+        return "text-base sm:text-lg lg:text-xl font-semibold leading-snug";
       case "title":
-        return "text-lg font-normal";
+        return "text-sm sm:text-base lg:text-lg font-medium leading-normal";
       case "body":
-        return "text-base font-normal";
+        return "text-sm sm:text-base font-normal leading-relaxed";
       case "caption":
-        return "text-sm font-light";
+        return "text-xs sm:text-sm font-light leading-normal";
       default:
-        return "text-base font-normal";
+        return "text-sm sm:text-base font-normal leading-relaxed";
     }
   };
 
-  // Warna untuk text
   const getColorClasses = () => {
     switch (color) {
       case "primary":
@@ -45,7 +43,6 @@ const Text = ({
       case "white":
         return "text-white";
       default:
-        // Default color berdasarkan variant
         switch (variant) {
           case "heading":
           case "subheading":
@@ -60,9 +57,13 @@ const Text = ({
     }
   };
 
-  // Gabungkan semua classes - pastikan color tidak di-override
+  const getResponsiveClasses = () => {
+    return "break-words overflow-wrap-anywhere";
+  };
+
   const textClasses = `
     ${getVariantClasses()}
+    ${getResponsiveClasses()}
     ${className}
     ${getColorClasses()}
   `

@@ -5,7 +5,7 @@ const Badge = ({
   className = "",
   ...props
 }) => {
-  // Size variants
+  
   const sizeClasses = {
     xs: "px-1.5 py-0.5 text-xs",
     sm: "px-2 py-1 text-xs",
@@ -14,7 +14,7 @@ const Badge = ({
     xl: "px-4 py-2 text-base",
   };
 
-  // Variant styles
+  
   const variantClasses = {
     default: "bg-gray-100 text-gray-800",
     primary: "bg-blue-100 text-blue-800",
@@ -27,7 +27,7 @@ const Badge = ({
     light: "bg-white text-gray-800 border border-gray-200",
   };
 
-  // Outline variants
+  
   const outlineVariants = {
     default: "border border-gray-300 text-gray-700 bg-transparent",
     primary: "border border-blue-300 text-blue-700 bg-transparent",
@@ -39,14 +39,14 @@ const Badge = ({
     dark: "border border-gray-600 text-gray-700 bg-transparent",
   };
 
-  // Base classes
+  
   const baseClasses = "inline-flex items-center font-medium rounded-full transition-colors duration-200";
 
-  // Determine if it's an outline variant
+  
   const isOutline = variant.startsWith("outline-");
   const baseVariant = isOutline ? variant.replace("outline-", "") : variant;
 
-  // Combine classes
+
   const badgeClasses = [
     baseClasses,
     sizeClasses[size],

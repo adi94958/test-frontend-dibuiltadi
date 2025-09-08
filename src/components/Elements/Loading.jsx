@@ -4,7 +4,7 @@ const Loading = ({
   color = "primary",
   centered = false,
 }) => {
-  // Ukuran loading spinner
+  
   const getSizeStyle = () => {
     switch (size) {
       case "sm":
@@ -16,7 +16,7 @@ const Loading = ({
     }
   };
 
-  // Warna loading spinner
+  
   const getColorStyle = () => {
     const colors = {
       primary: "border-blue-600 border-t-transparent",
@@ -29,7 +29,7 @@ const Loading = ({
     return colors[color] || colors.primary;
   };
 
-  // Gabungkan semua style
+  
   const spinnerStyle = `
     inline-block rounded-full animate-spin
     ${getSizeStyle()}
@@ -39,7 +39,7 @@ const Loading = ({
     .replace(/\s+/g, " ")
     .trim();
 
-  // Jika centered true, bungkus dengan container centering
+
   if (centered) {
     return (
       <div className="flex items-center justify-center min-h-screen">

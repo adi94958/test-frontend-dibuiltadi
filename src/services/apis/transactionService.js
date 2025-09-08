@@ -1,9 +1,7 @@
 import axiosInstance from "../axiosInstance";
 import { handleApiResponse, handleApiError } from "../../utils/apiHelpers";
 
-// Transaction Service Functions
 export const transactionService = {
-  // Get All Transactions with pagination and filters
   getAll: async (params = {}) => {
     try {
       const response = await axiosInstance.get("/api/v1/transactions", {
@@ -15,7 +13,6 @@ export const transactionService = {
     }
   },
 
-  // Get Transaction Detail by Reference No
   getDetail: async (referenceNo) => {
     try {
       const response = await axiosInstance.get(

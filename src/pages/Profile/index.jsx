@@ -25,7 +25,7 @@ const ProfilePage = () => {
     useSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Setup formik untuk change password
+  
   const formik = useFormik({
     initialValues: {
       currentPassword: "",
@@ -85,7 +85,7 @@ const ProfilePage = () => {
     dispatch(clearUpdateError());
   };
 
-  // Handle submit dengan validasi
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -105,7 +105,7 @@ const ProfilePage = () => {
     }
   };
 
-  // Breadcrumb items
+  
   const breadcrumbItems = [{ label: "Profile" }];
 
   return (
@@ -114,7 +114,7 @@ const ProfilePage = () => {
       breadcrumbItems={breadcrumbItems}
       showBreadcrumb={true}
     >
-      {/* Profile Header Card */}
+      
       <Card variant="outline" padding="lg" className="mb-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -142,9 +142,9 @@ const ProfilePage = () => {
         </div>
       </Card>
 
-      {/* Profile Details - 2 Column Layout */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Personal Information */}
+        
         <Card variant="outline" heading="Personal Information" padding="lg">
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -187,7 +187,7 @@ const ProfilePage = () => {
           </div>
         </Card>
 
-        {/* Role & Access Information */}
+        
         <Card
           variant="outline"
           heading="Role & Access Information"
@@ -228,7 +228,7 @@ const ProfilePage = () => {
         </Card>
       </div>
 
-      {/* Modal Change Password */}
+
       {isModalOpen && (
         <Modal.Backdrop onClick={handleCloseModal}>
           <Modal.Container size="md">

@@ -43,7 +43,7 @@ const messages = {
 
   address: {
     required: "Address is required",
-    minLength: "Address must be at least 10 characters",
+    minLength: "Address must be at least 3 characters",
     maxLength: "Address must not exceed 200 characters",
   },
 

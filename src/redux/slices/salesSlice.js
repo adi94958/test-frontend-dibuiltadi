@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { salesService } from "../../services/apis/salesCodeService";
 
-// Async Thunk for get sales list
 export const getSales = createAsyncThunk(
   "sales/getSales",
   async (_, { rejectWithValue }) => {

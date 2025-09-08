@@ -3,14 +3,13 @@ import axios from "axios";
 const axiosInstance = axios.create({
   baseURL:
     import.meta.env.VITE_APP_BASE_URL || "https://sandbox.dibuiltadi.com",
-  timeout: 60000, // 60 seconds
+  timeout: 60000,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
   },
 });
 
-// Request Interceptor - Add Bearer token
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
@@ -22,7 +21,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor - Handle 401
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {

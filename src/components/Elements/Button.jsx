@@ -10,14 +10,14 @@ const Button = ({
   className = "",
   ...props
 }) => {
-  // Style dasar untuk semua button
+  
   const baseStyle = `
     inline-flex items-center justify-center font-medium 
     transition-all duration-200 focus:outline-none 
     disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
   `;
 
-  // Ukuran button
+  
   const getSize = () => {
     switch (size) {
       case "sm":
@@ -29,7 +29,7 @@ const Button = ({
     }
   };
 
-  // Warna dan variant button
+  
   const getColorStyle = () => {
     const colors = {
       primary: {
@@ -61,12 +61,12 @@ const Button = ({
     return colors[color]?.[variant] || colors.primary.solid;
   };
 
-  // Border radius
+  
   const getBorderRadius = () => {
     return rounded ? "rounded-full" : "rounded-lg";
   };
 
-  // Adjust size for icon-only buttons
+  
   const getIconSize = () => {
     if (icon && !children) {
       switch (size) {
@@ -81,7 +81,7 @@ const Button = ({
     return "";
   };
 
-  // Gabungkan semua style
+  
   const buttonStyle = `
     ${baseStyle}
     ${getSize()}
@@ -101,10 +101,10 @@ const Button = ({
       disabled={disabled}
       {...props}
     >
-      {/* Render icon jika ada */}
+      
       {icon && <span className="flex items-center justify-center">{icon}</span>}
 
-      {/* Render text/children */}
+
       {children}
     </button>
   );

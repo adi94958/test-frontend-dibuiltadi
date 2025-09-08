@@ -1,15 +1,143 @@
-import {
-  Button,
-  Card,
-  SelectInput,
-  Text,
-  TextInput,
-} from "../../components/Elements";
+import { useMemo, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Text } from "../../components/Elements";
 import { MainLayout } from "../../components/Layouts";
-import { formatCurrency } from "../../utils/formatHelpers";
+import { getSales } from "../../redux/slices/salesSlice";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line, Bar } from "react-chartjs-2";
+
+import {
+  useIsolatedDailyTransactions,
+  useIsolatedMonthlyTransactions,
+  useIsolatedYearlyTransactions,
+  useIsolatedTopCustomers,
+} from "../../hooks/useIsolatedSummaryHooks";
+
+import { calculateStatsCards } from "../../utils/statsHelpers";
+import {
+  createChartOptions,
+  createDailyChartData,
+  createMonthlyChartData,
+  createYearlyChartData,
+} from "../../utils/chartHelpers";
+
+import {
+  StatsCards,
+  ChartSection,
+  DailyChartFilters,
+  MonthlyChartFilters,
+  YearlyChartFilters,
+  TopCustomersFilters,
+  YearlyStats,
+  MonthlyStats,
+} from "./Components";
+
+import TopCustomersTable from "./Components/TopCustomersTable";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const SummaryPage = () => {
+  const dispatch = useDispatch();
+  const { salesList } = useSelector((state) => state.sales);
+
+  const dailySection = useIsolatedDailyTransactions();
+  const monthlySection = useIsolatedMonthlyTransactions();
+  const yearlySection = useIsolatedYearlyTransactions();
+  const topCustomersSection = useIsolatedTopCustomers();
+
   const breadcrumbItems = [];
+
+  useEffect(() => {
+    dispatch(getSales());
+  }, [dispatch]);
+
+  if (!dailySection.isInitialized) {
+    dailySection.initializeData();
+  }
+  if (!monthlySection.isInitialized) {
+    monthlySection.initializeData();
+  }
+  if (!yearlySection.isInitialized) {
+    yearlySection.initializeData();
+  }
+  if (!topCustomersSection.isInitialized) {
+    topCustomersSection.initializeData();
+  }
+
+  const statsCards = useMemo(() => {
+    return calculateStatsCards(
+      dailySection.data,
+      monthlySection.data,
+      yearlySection.data,
+      dailySection.filters,
+      monthlySection.filters,
+      yearlySection.filters
+    );
+  }, [
+    dailySection.data,
+    monthlySection.data,
+    yearlySection.data,
+    dailySection.filters,
+    monthlySection.filters,
+    yearlySection.filters,
+  ]);
+
+  const dailyChartData = useMemo(
+    () => createDailyChartData(dailySection.data),
+    [dailySection.data]
+  );
+  const monthlyChartData = useMemo(
+    () => createMonthlyChartData(monthlySection.data),
+    [monthlySection.data]
+  );
+  const yearlyChartData = useMemo(
+    () => createYearlyChartData(yearlySection.data),
+    [yearlySection.data]
+  );
+
+  const chartOptions = createChartOptions();
+  const yearlyChartOptions = createChartOptions("T", 1000000000000);
+
+  const error =
+    dailySection.error ||
+    monthlySection.error ||
+    yearlySection.error ||
+    topCustomersSection.error;
+
+  if (error) {
+    return (
+      <MainLayout
+        title="Dashboard Overview"
+        caption="Transaction Summary"
+        breadcrumbItems={breadcrumbItems}
+      >
+        <div className="flex justify-center items-center h-64">
+          <Text variant="body" color="danger">
+            Error loading data: {error}
+          </Text>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout
@@ -18,126 +146,69 @@ const SummaryPage = () => {
       breadcrumbItems={breadcrumbItems}
     >
       <div className="space-y-7">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Stats Cards */}
-          <Card variant="solid">
-            <Text variant="subheading" className="text-gray-900 mb-2">
-              Daily Total
-            </Text>
-            <Text variant="heading" className="truncate">
-              {formatCurrency("10000000000000")}
-            </Text>
-            <Text variant="body" color="secondary" className="mt-1">
-              +1% from last day
-            </Text>
-          </Card>
-          <Card variant="solid">
-            <Text variant="subheading" className="mb-2">
-              Monthly Total
-            </Text>
-            <Text variant="heading" color="primary" className="truncate">
-              {formatCurrency("10000000000000")}
-            </Text>
-            <Text variant="body" color="secondary" className="mt-1">
-              +1% from last month
-            </Text>
-          </Card>
-          <Card variant="solid">
-            <Text variant="subheading" className="mb-2">
-              Yearly Total
-            </Text>
-            <Text
-              variant="heading"
-              color="danger"
-              className="font-bold truncate"
-            >
-              {formatCurrency("10000000000000")}
-            </Text>
-            <Text variant="body" color="secondary" className="mt-1">
-              +1% from last day
-            </Text>
-          </Card>
-          <Card variant="solid">
-            <Text variant="subheading" className="mb-2">
-              YoY Growth
-            </Text>
-            <Text
-              variant="heading"
-              color="success"
-              className="font-bold text-blue-600 truncate"
-            >
-              120%
-            </Text>
-            <Text variant="body" color="secondary" className="mt-1">
-              +1% from last day
-            </Text>
-          </Card>
-        </div>
-
-        {/* Grafik Chart */}
-        <Card variant="solid" heading="Daily Transactions">
-          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
-            <TextInput type="date" label="Start date" labelType="outside" />
-            <TextInput type="date" label="End date" labelType="outside" />
-            <Button variant="solid" className="mt-3">
-              Reset
-            </Button>
-          </div>
-          <div>
-            <Text variant="body" color="secondary">
-              Disini berupa grafik chart
-            </Text>
-          </div>
-        </Card>
-        <Card variant="solid" heading="Monthly Transactions">
-          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
-            <TextInput type="month" label="Start month" labelType="outside" />
-            <TextInput type="month" label="End month" labelType="outside" />
-            <Button variant="solid" className="mt-3">
-              Reset
-            </Button>
-          </div>
-          <Text variant="body" color="secondary">
-            Disini berupa grafik chart
-          </Text>
-        </Card>
-        <Card variant="solid" heading="Yearly Transactions">
-          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
-            <TextInput type="year" label="Start year" labelType="outside" />
-            <TextInput type="year" label="End year" labelType="outside" />
-            <Button variant="solid" className="mt-3">
-              Reset
-            </Button>
-          </div>
-          <Text variant="body" color="secondary">
-            Disini berupa grafik chart
-          </Text>
-        </Card>
-        <Card variant="solid" heading="Top Customers">
-          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
-            <TextInput type="month" label="Start date" labelType="outside" />
-            <TextInput type="month" label="End date" labelType="outside" />
-            <SelectInput
-              id="limit"
-              name="limit"
-              label="Limit"
-              labelType="outside"
-              options={[
-                { value: "", label: "All" },
-                { value: "5", label: "5" },
-                { value: "10", label: "10" },
-                { value: "20", label: "20" },
-              ]}
-              className="sm:w-24"
-            />
-            <Button variant="solid" className="mt-3">
-              Reset
-            </Button>
-          </div>
-          <Text variant="body" color="secondary">
-            Disini berupa grafik chart
-          </Text>
-        </Card>
+        <StatsCards statsCards={statsCards} />
+        <ChartSection
+          title="Daily Transactions"
+          chartData={dailyChartData}
+          chartOptions={chartOptions}
+          loading={dailySection.loading}
+          ChartComponent={Line}
+        >
+          <DailyChartFilters
+            filters={dailySection.filters}
+            onFilterChange={dailySection.updateFilters}
+            onReset={dailySection.resetFilters}
+            salesList={salesList}
+          />
+        </ChartSection>
+        <ChartSection
+          title="Monthly Transactions"
+          chartData={monthlyChartData}
+          chartOptions={chartOptions}
+          loading={monthlySection.loading}
+          ChartComponent={Bar}
+        >
+          <MonthlyChartFilters
+            filters={monthlySection.filters}
+            onFilterChange={monthlySection.updateFilters}
+            onReset={monthlySection.resetFilters}
+            salesList={salesList}
+          />
+          <MonthlyStats
+            monthlyTransactions={monthlySection.data}
+            loading={monthlySection.loading}
+            monthlyFilters={monthlySection.filters}
+          />
+        </ChartSection>
+        <ChartSection
+          title="Yearly Transactions"
+          chartData={yearlyChartData}
+          chartOptions={yearlyChartOptions}
+          loading={yearlySection.loading}
+          ChartComponent={Bar}
+        >
+          <YearlyChartFilters
+            filters={yearlySection.filters}
+            onFilterChange={yearlySection.updateFilters}
+            onReset={yearlySection.resetFilters}
+            salesList={salesList}
+          />
+          <YearlyStats
+            yearlyTransactions={yearlySection.data}
+            loading={yearlySection.loading}
+          />
+        </ChartSection>
+        <ChartSection title="Top Customers" showChart={false}>
+          <TopCustomersFilters
+            filters={topCustomersSection.filters}
+            onFilterChange={topCustomersSection.updateFilters}
+            onReset={topCustomersSection.resetFilters}
+          />
+          <TopCustomersTable
+            data={topCustomersSection.data?.items}
+            loading={topCustomersSection.loading}
+          />
+        </ChartSection>
       </div>
     </MainLayout>
   );

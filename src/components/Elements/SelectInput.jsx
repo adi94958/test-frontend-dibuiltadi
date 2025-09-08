@@ -11,7 +11,7 @@ function SelectInput({
   onBlur,
   error,
   touched,
-  options = [], // [{ value, label }]
+  options = [],
   className = "",
   labelType = "outside", // "outside" | "none"
   placeholder = "",
@@ -26,12 +26,12 @@ function SelectInput({
     hasError ? "danger" : isFocused ? "primary" : "muted";
 
   const getPadding = () => {
-    if (labelType === "none") return "px-4 py-0"; // Remove padding for flex centering
-    return "px-4 py-2.5"; // Default for outside label
+    if (labelType === "none") return "px-4 py-0";
+    return "px-4 py-2.5";
   };
 
   const getFlexStyles = () => {
-    if (labelType === "none") return "flex items-center h-14"; // Center content and set height to match pt-6 pb-2
+    if (labelType === "none") return "flex items-center h-14";
     return "";
   };
 
@@ -43,7 +43,6 @@ function SelectInput({
 
   return (
     <div className={`mb-4 ${className}`}>
-      {/* Outside label */}
       {labelType === "outside" && label && (
         <Text
           variant="caption"
@@ -73,11 +72,7 @@ function SelectInput({
           className={base}
           {...props}
         >
-          {placeholder && (
-            <option value="">
-              {placeholder}
-            </option>
-          )}
+          {placeholder && <option value="">{placeholder}</option>}
 
           {options.map((opt) => (
             <option key={String(opt.value)} value={opt.value}>
@@ -86,11 +81,10 @@ function SelectInput({
           ))}
         </select>
 
-        {/* caret icon */}
-        <ChevronDownIcon 
+        <ChevronDownIcon
           className={`pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : 'rotate-0'
-          }`} 
+            isOpen ? "rotate-180" : "rotate-0"
+          }`}
         />
       </div>
 

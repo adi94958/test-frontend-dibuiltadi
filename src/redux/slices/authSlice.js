@@ -22,7 +22,6 @@ const removeUserData = () => {
   localStorage.removeItem("userData");
 };
 
-// Async Thunk for register
 export const register = createAsyncThunk(
   "auth/register",
   async (userData, { rejectWithValue }) => {
@@ -39,7 +38,6 @@ export const register = createAsyncThunk(
   }
 );
 
-// Async Thunk for login
 export const login = createAsyncThunk(
   "auth/login",
   async ({ phone, password }, { rejectWithValue }) => {
@@ -57,7 +55,6 @@ export const login = createAsyncThunk(
   }
 );
 
-// Async Thunk for logout
 export const logoutUser = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
@@ -75,7 +72,6 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
-// Async Thunk for get profile
 export const getProfile = createAsyncThunk(
   "auth/getProfile",
   async (_, { rejectWithValue }) => {
@@ -100,7 +96,6 @@ export const getProfile = createAsyncThunk(
   }
 );
 
-// Async Thunk for update password
 export const updatePassword = createAsyncThunk(
   "auth/updatePassword",
   async (

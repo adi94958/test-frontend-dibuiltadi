@@ -29,10 +29,10 @@ const FormLayout = ({
       className={className}
       {...props}
     >
-      {/* Form Body - Content dari parent */}
+      
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>{children}</div>
-        {/* Footer dengan Buttons */}
+
         <div className={"flex gap-3 justify-end pt-4"}>
           {showCancelButton && (
             <Button

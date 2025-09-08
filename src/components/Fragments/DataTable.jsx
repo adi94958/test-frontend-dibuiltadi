@@ -39,7 +39,6 @@ const DataTable = ({
 
   return (
     <div className={className}>
-      {/* Responsive Table with Horizontal Scroll */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 border-t border-gray-300">
@@ -85,7 +84,6 @@ const DataTable = ({
         </table>
       </div>
 
-      {/* Pagination */}
       {showPagination && pagination && data.length > 0 && (
         <PaginationControls
           pagination={pagination}
@@ -97,7 +95,6 @@ const DataTable = ({
   );
 };
 
-// Separate pagination component for better reusability
 const PaginationControls = ({ pagination, onPageChange, onPerPageChange }) => {
   const perPageOptions = [
     { value: 10, label: "10" },
@@ -115,7 +112,6 @@ const PaginationControls = ({ pagination, onPageChange, onPerPageChange }) => {
   return (
     <div className="px-4 py-6 border-t border-gray-200 sm:px-6">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Per page selector */}
         <div className="flex items-center gap-2 order-2 sm:order-1 h-8">
           <Text variant="caption" color="secondary" className="leading-8">
             Show
@@ -136,7 +132,6 @@ const PaginationControls = ({ pagination, onPageChange, onPerPageChange }) => {
           </Text>
         </div>
 
-        {/* Pagination info and controls */}
         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 order-1 sm:order-2">
           <Text
             variant="caption"
@@ -146,7 +141,6 @@ const PaginationControls = ({ pagination, onPageChange, onPerPageChange }) => {
             {startItem}-{endItem} of {pagination.total}
           </Text>
 
-          {/* Navigation */}
           <div className="flex items-center gap-1 h-8">
             <Button
               variant="outline"

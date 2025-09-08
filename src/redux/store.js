@@ -16,7 +16,7 @@ const store = configureStore({
     sales: salesReducer,
     city: cityReducer,
     province: provinceReducer,
-    summary: summaryReducer,
+    summary: summaryReducer, // Consolidated summary slice with all sections
     sidebar: sidebarReducer,
   },
   middleware: (getDefaultMiddleware) =>

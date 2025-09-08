@@ -9,7 +9,7 @@ const Breadcrumb = ({
   className = "",
   size = "md",
 }) => {
-  // Size variants
+  
   const sizeClasses = {
     sm: "text-xs",
     md: "text-sm", 
@@ -22,7 +22,7 @@ const Breadcrumb = ({
       aria-label="Breadcrumb"
     >
       <ol className="flex items-center space-x-1">
-        {/* Dashboard Item - Always clickable */}
+        
         <li>
           <Link
             to={homeUrl}
@@ -32,14 +32,14 @@ const Breadcrumb = ({
           </Link>
         </li>
 
-        {/* Separator after Dashboard */}
+        
         {items.length > 0 && (
           <li className="flex items-center px-1">
             <ChevronRightIcon className="w-4 h-4 text-gray-400" />
           </li>
         )}
 
-        {/* Breadcrumb Items */}
+
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           

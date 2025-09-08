@@ -1,13 +1,11 @@
 import { provinceService } from "../../services/apis/provinceService";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-// Async Thunk for get provinces
 export const getProvinces = createAsyncThunk(
   "customer/getProvinces",
   async (_, { rejectWithValue }) => {
     try {
       const response = await provinceService.getProvinces();
-      console.log("getProvinces", response);
       return response;
     } catch (err) {
       if (err.response && err.response.data) {
@@ -33,7 +31,6 @@ const provinceSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Get provinces cases
       .addCase(getProvinces.pending, (state) => {
         state.loading = true;
         state.error = null;

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { EyeIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import {
   getAllTransactions,
@@ -15,26 +14,25 @@ import {
   SelectInput,
   Divider,
 } from "../../components/Elements";
-import { DataTable } from "../../components/Fragments";
+import TransactionTable from "./components/TransactionTable";
 import { MainLayout } from "../../components/Layouts";
-import { formatCurrency, formatDate } from "../../utils/formatHelpers";
+import { getCurrentDateConstraints } from "../../utils/dateHelpers";
 
 const TransactionPage = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { transactions, pagination, loading, error } = useSelector(
     (state) => state.transaction
   );
   const { customerList } = useSelector((state) => state.customer);
   const { salesList } = useSelector((state) => state.sales);
 
-  // Get current month dates
   const currentMonth = new Date();
   const firstDay = new Date(
     currentMonth.getFullYear(),
     currentMonth.getMonth(),
     1
   );
+  const { maxDate } = getCurrentDateConstraints();
 
   const [filters, setFilters] = useState({
     page: 1,
@@ -50,15 +48,12 @@ const TransactionPage = () => {
 
   const [showFilters, setShowFilters] = useState(false);
 
-  // Load customer and sales data on component mount
   useEffect(() => {
     dispatch(getCustomerList());
     dispatch(getSales());
   }, [dispatch]);
 
-  // Load data when filters change
   useEffect(() => {
-    // Clean empty params
     const cleanParams = Object.entries(filters).reduce((acc, [key, value]) => {
       if (["startDate", "endDate"].includes(key) || value) {
         acc[key] = value;
@@ -91,69 +86,6 @@ const TransactionPage = () => {
     });
   };
 
-  // Table columns
-  const columns = [
-    {
-      key: "referenceNo",
-      title: "Reference No",
-      width: "15%",
-      render: (value) => (
-        <Text variant="body" color="primary">
-          {value}
-        </Text>
-      ),
-    },
-    {
-      key: "customer",
-      title: "Customer",
-      width: "25%",
-      render: (customer) => (
-        <div>
-          <Text variant="body">{customer?.name || "-"}</Text>
-          <Text variant="caption">{customer?.code || "-"}</Text>
-        </div>
-      ),
-    },
-    {
-      key: "sales",
-      title: "Sales",
-      width: "15%",
-      render: (value) => <Text variant="caption">{value}</Text>,
-    },
-    {
-      key: "amountTotal",
-      title: "Amount Total",
-      width: "15%",
-      render: (value) => <Text variant="body">{formatCurrency(value)}</Text>,
-    },
-    {
-      key: "dateOrder",
-      title: "Order Date",
-      width: "12%",
-      render: (value) => <Text variant="caption">{formatDate(value)}</Text>,
-    },
-    {
-      key: "dateDue",
-      title: "Due Date",
-      width: "12%",
-      render: (value) => <Text variant="caption">{formatDate(value)}</Text>,
-    },
-    {
-      key: "action",
-      title: "Action",
-      width: "6%",
-      render: (value, row) => (
-        <Button
-          variant="outline"
-          size="sm"
-          color="primary"
-          icon={<EyeIcon className="w-4 h-4" />}
-          onClick={() => navigate(`/transaction/detail/${row.referenceNo}`)}
-        />
-      ),
-    },
-  ];
-
   const breadcrumbItems = [
     { label: "Transaction Management", href: "/transaction" },
   ];
@@ -163,7 +95,6 @@ const TransactionPage = () => {
       title="Transaction Management"
       breadcrumbItems={breadcrumbItems}
     >
-      {/* Error Message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
           <Text variant="body" color="danger" className="font-medium mb-2">
@@ -179,13 +110,9 @@ const TransactionPage = () => {
         </div>
       )}
 
-      {/* Main Container */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        {/* Search and Filters Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 my-4 mx-4">
-          {/* Search and Filter Toggle - Right side */}
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            {/* Search */}
             <div className="w-full sm:w-64">
               <TextInput
                 labelType="placeholder"
@@ -194,7 +121,6 @@ const TransactionPage = () => {
                 placeholder="Search by reference no..."
               />
             </div>
-            {/* Filter Toggle */}
             <Button
               variant="solid"
               onClick={() => setShowFilters(!showFilters)}
@@ -206,17 +132,17 @@ const TransactionPage = () => {
           </div>
         </div>
 
-        {/* Advanced Filters */}
         {showFilters && (
           <div>
             <Divider />
             <div className="px-6 py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 <TextInput
                   label="Start Date"
                   labelType="outside"
                   type="date"
                   value={filters.startDate}
+                  max={maxDate}
                   onChange={(e) =>
                     handleFilterChange("startDate", e.target.value)
                   }
@@ -227,6 +153,7 @@ const TransactionPage = () => {
                   labelType="outside"
                   type="date"
                   value={filters.endDate}
+                  max={maxDate}
                   onChange={(e) =>
                     handleFilterChange("endDate", e.target.value)
                   }
@@ -270,7 +197,7 @@ const TransactionPage = () => {
                   ]}
                   className="mb-0"
                 />
-                {/* Sort Options */}
+
                 <SelectInput
                   id="sort-by"
                   name="sortBy"
@@ -301,8 +228,12 @@ const TransactionPage = () => {
                   className="mb-0"
                 />
 
-                <div className="flex justify-center md:justify-start items-center mt-3">
-                  <Button variant="outline" onClick={handleResetFilters}>
+                <div className="col-span-2 sm:col-span-3 lg:col-span-4 flex justify-center sm:justify-start items-center mt-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleResetFilters}
+                    className="w-full sm:w-auto"
+                  >
                     Reset Filters
                   </Button>
                 </div>
@@ -311,16 +242,12 @@ const TransactionPage = () => {
           </div>
         )}
 
-        {/* Data Table */}
-        <DataTable
-          columns={columns}
-          data={transactions}
+        <TransactionTable
+          transactions={transactions}
           loading={loading}
-          emptyMessage="No transactions found. Try adjusting your filters."
           pagination={pagination}
           onPageChange={(page) => handleFilterChange("page", page)}
           onPerPageChange={(perPage) => handleFilterChange("perPage", perPage)}
-          showPagination={true}
         />
       </div>
     </MainLayout>

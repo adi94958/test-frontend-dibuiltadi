@@ -1,9 +1,7 @@
 import axiosInstance from "../axiosInstance";
 import { handleApiResponse, handleApiError } from "../../utils/apiHelpers";
 
-// Summary Service Functions
 export const summaryService = {
-  // Get Daily Transactions Summary
   getDailyTransactions: async (params = {}) => {
     try {
       const response = await axiosInstance.get(
@@ -16,11 +14,10 @@ export const summaryService = {
     }
   },
 
-  // Get Monthly Transactions Summary (using correct endpoint from documentation)
   getMonthlyTransactions: async (params = {}) => {
     try {
       const response = await axiosInstance.get(
-        "/api/v1/summaries/montly-transactions",
+        "/api/v1/summaries/monthly-transactions",
         { params }
       );
       return handleApiResponse(response);
@@ -29,7 +26,6 @@ export const summaryService = {
     }
   },
 
-  // Get Yearly Transactions Summary
   getYearlyTransactions: async (params = {}) => {
     try {
       const response = await axiosInstance.get(
@@ -42,7 +38,6 @@ export const summaryService = {
     }
   },
 
-  // Get Top Customers Summary
   getTopCustomers: async (params = {}) => {
     try {
       const response = await axiosInstance.get(

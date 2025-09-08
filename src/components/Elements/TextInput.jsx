@@ -31,7 +31,7 @@ function TextInput({
 
   const getPadding = () => {
     if (labelType === "inside") return "px-4 pt-6 pb-2";
-    return "px-4 py-2.5"; // same for outside and placeholder
+    return "px-4 py-2.5";
   };
 
   const getInputStyles = () => {
@@ -50,7 +50,6 @@ function TextInput({
 
   return (
     <div className={`${hasMarginBottom ? "mb-4" : ""} ${className}`}>
-      {/* Outside label */}
       {labelType === "outside" && label && (
         <Text
           variant="caption"
@@ -77,10 +76,9 @@ function TextInput({
           {...props}
         />
 
-        {/* Floating label for inside variant */}
         {labelType === "inside" && label && (
           <Text
-            variant="body"
+            variant="caption"
             color={getLabelColor()}
             className={`absolute left-4 transition-all duration-150 pointer-events-none font-medium ${
               shouldFloatLabel ? "top-2 text-xs" : "top-1/2 -translate-y-1/2"
@@ -90,7 +88,6 @@ function TextInput({
           </Text>
         )}
 
-        {/* Password toggle */}
         {type === "password" && (
           <button
             type="button"
@@ -107,7 +104,6 @@ function TextInput({
         )}
       </div>
 
-      {/* Error message */}
       {hasError && (
         <Text variant="caption" color="danger" className="block mt-2 ml-4">
           {error}

@@ -17,8 +17,7 @@ const Login = lazy(() => import("./Auth/login"));
 const Register = lazy(() => import("./Auth/register"));
 
 const Pages = () => {
-  //const { isAuthenticated } = useSelector((state) => state.auth);
-  const isAuthenticated = true; // Hardcoded for testing purposes
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const isCollapsed = useSelector((state) => state.sidebar.isCollapsed);
   const location = useLocation();
 

@@ -1,9 +1,7 @@
 import axiosInstance from "../axiosInstance";
 import { handleApiResponse, handleApiError } from "../../utils/apiHelpers";
 
-// Auth Service Functions
 export const authService = {
-  // Register
   register: async (userData) => {
     try {
       const response = await axiosInstance.post(
@@ -16,7 +14,6 @@ export const authService = {
     }
   },
 
-  // Login
   login: async (phone, password) => {
     try {
       const response = await axiosInstance.post("/api/v1/auth/login", {
@@ -29,7 +26,6 @@ export const authService = {
     }
   },
 
-  // Logout
   logout: async () => {
     try {
       const response = await axiosInstance.post("/api/v1/auth/logout");
@@ -39,7 +35,6 @@ export const authService = {
     }
   },
 
-  // Get Profile
   getProfile: async () => {
     try {
       const response = await axiosInstance.get("/api/v1/auth/profile");
@@ -49,7 +44,6 @@ export const authService = {
     }
   },
 
-  // Update Password
   updatePassword: async (
     currentPassword,
     newPassword,

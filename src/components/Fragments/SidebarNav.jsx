@@ -43,9 +43,9 @@ const Sidebar = () => {
     return location.pathname.startsWith(path);
   };
 
-  // Sidebar content
+  
   const SidebarContent = ({ isMobile = false }) => {
-    // Di mobile, selalu gunakan expanded (tidak collapsed)
+    
     const shouldCollapse = isMobile ? false : isCollapsed;
     
     return (
@@ -55,15 +55,15 @@ const Sidebar = () => {
           ${shouldCollapse ? "w-16" : "w-64"}
         `}
       >
-        {/* Header */}
+        
         <div className="p-4 border-b border-gray-700 h-18 flex items-center">
           <div className="flex items-center w-full relative">
-            {/* Icon Admin */}
+            
             <div className="flex-shrink-0">
               <UserCircleIcon className="w-8 h-8 text-white" />
             </div>
             
-            {/* Title */}
+            
             <h1 className={`ml-3 text-lg font-semibold text-white truncate transition-all duration-300 ease-in-out ${
               shouldCollapse 
                 ? "opacity-0 w-0 overflow-hidden ml-0" 
@@ -72,7 +72,7 @@ const Sidebar = () => {
               Admin Panel
             </h1>
             
-            {/* Mobile close button - only show on mobile when sidebar is open */}
+            
             {isMobile && (
               <button
                 onClick={toggleMobileMenu}
@@ -84,7 +84,7 @@ const Sidebar = () => {
           </div>
         </div>
 
-        {/* Navigation */}
+        
         <nav className="flex-1 p-4">
           <ul className="space-y-2">
             {menuItems.map((item) => {
@@ -114,7 +114,7 @@ const Sidebar = () => {
                       </span>
                     )}
 
-                    {/* Tooltip for collapsed state - hanya show di desktop */}
+                    
                     {shouldCollapse && !isMobile && (
                       <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out pointer-events-none whitespace-nowrap z-50">
                         {item.name}
@@ -127,7 +127,7 @@ const Sidebar = () => {
           </ul>
         </nav>
 
-        {/* Footer */}
+        
         <div className="p-4 border-t border-gray-700">
           <div
             className={`
@@ -145,12 +145,12 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Desktop Sidebar */}
+      
       <div className="hidden lg:block fixed left-0 top-0 h-full z-30">
         <SidebarContent isMobile={false} />
       </div>
 
-      {/* Mobile Sidebar */}
+
       <div
         className={`
           lg:hidden fixed left-0 top-0 h-full z-60 transform transition-transform duration-300

@@ -10,12 +10,11 @@ import {
   SelectInput,
   Divider,
 } from "../../components/Elements";
-import { DataTable } from "../../components/Fragments";
 import { MainLayout } from "../../components/Layouts";
-import { formatDate } from "../../utils/formatHelpers";
-import { EyeIcon, PencilIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { getCurrentDateConstraints } from "../../utils/dateHelpers";
 import { getProvinces } from "../../redux/slices/provinceSlice";
 import { getCities } from "../../redux/slices/citySlice";
+import CustomerTable from "./components/CustomerTable";
 
 const CustomerPage = () => {
   const dispatch = useDispatch();
@@ -27,13 +26,13 @@ const CustomerPage = () => {
   const { provincesList } = useSelector((state) => state.province);
   const { citiesList } = useSelector((state) => state.city);
 
-  // Get current month dates
   const currentMonth = new Date();
   const firstDay = new Date(
     currentMonth.getFullYear(),
     currentMonth.getMonth(),
     1
   );
+  const { maxDate } = getCurrentDateConstraints();
 
   const [filters, setFilters] = useState({
     page: 1,
@@ -49,13 +48,11 @@ const CustomerPage = () => {
 
   const [showFilters, setShowFilters] = useState(false);
 
-  // Load provinces and cities for filters
   useEffect(() => {
     dispatch(getProvinces());
     dispatch(getCities());
   }, [dispatch]);
 
-  // Load data when filters change
   useEffect(() => {
     // Clean empty params
     const cleanParams = Object.entries(filters).reduce((acc, [key, value]) => {
@@ -90,72 +87,10 @@ const CustomerPage = () => {
     });
   };
 
-  // Table columns
-  const columns = [
-    {
-      key: "code",
-      title: "Code",
-      width: "15%",
-      render: (value) => (
-        <Text variant="body" color="primary">
-          {value}
-        </Text>
-      ),
-    },
-    {
-      key: "name",
-      title: "Name",
-      width: "25%",
-      render: (value) => <Text variant="body">{value || "-"}</Text>,
-    },
-    {
-      key: "city",
-      title: "City",
-      width: "20%",
-      render: (value) => <Text variant="caption">{value || "-"}</Text>,
-    },
-    {
-      key: "province",
-      title: "Province",
-      width: "20%",
-      render: (value) => <Text variant="caption">{value || "-"}</Text>,
-    },
-    {
-      key: "createdAt",
-      title: "Created At",
-      width: "12%",
-      render: (value) => <Text variant="caption">{formatDate(value)}</Text>,
-    },
-    {
-      key: "actions",
-      title: "Actions",
-      width: "8%",
-      render: (value, row) => (
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            color="primary"
-            icon={<EyeIcon className="w-4 h-4" />}
-            onClick={() => navigate(`/customers/detail/${row.code}`)}
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            color="success"
-            icon={<PencilIcon className="w-4 h-4" />}
-            onClick={() => navigate(`/customers/edit/${row.code}`)}
-          />
-        </div>
-      ),
-    },
-  ];
-
   const breadcrumbItems = [{ label: "Customer Management", href: "/customer" }];
 
   return (
     <MainLayout title="Customer Management" breadcrumbItems={breadcrumbItems}>
-      {/* Error Message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
           <Text variant="body" color="danger" className="font-medium mb-2">
@@ -171,52 +106,78 @@ const CustomerPage = () => {
         </div>
       )}
 
-      {/* Main Container */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        {/* Search and Filters Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 my-4 mx-4">
-          {/* Search and Filter Toggle - Right side */}
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            {/* Search */}
-            <div className="w-full sm:w-64">
-              <TextInput
-                labelType="placeholder"
-                value={filters.search}
-                onChange={(e) => handleFilterChange("search", e.target.value)}
-                placeholder="Search by customer name..."
-              />
+        <div className="px-4 py-4">
+          {/* Mobile Layout - Grid untuk search, filter button, dan add button */}
+          <div className="grid grid-cols-1 sm:hidden gap-3 mb-4">
+            <TextInput
+              labelType="placeholder"
+              value={filters.search}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
+              placeholder="Search by customer name..."
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="solid"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center justify-center gap-2"
+              >
+                <FunnelIcon className="w-4 h-4" />
+                {showFilters ? "Hide" : "Filter"}
+              </Button>
+              <Button
+                variant="solid"
+                onClick={() => navigate("/customers/add")}
+                className="flex items-center justify-center gap-2"
+              >
+                <PlusCircleIcon className="w-5 h-5" />
+                Add
+              </Button>
             </div>
-            {/* Filter Toggle */}
-            <Button
-              variant="solid"
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2"
-            >
-              <FunnelIcon className="w-4 h-4" />
-              {showFilters ? "Hide Filters" : "Show Filters"}
-            </Button>
-            <Button
-              variant="solid"
-              onClick={() => navigate("/customers/add")}
-              className="flex items-center gap-2"
-            >
-              <PlusCircleIcon className="w-6 h-6" />
-              Add Customer
-            </Button>
+          </div>
+
+          {/* Desktop Layout - Original */}
+          <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-end gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="w-full sm:w-64">
+                <TextInput
+                  labelType="placeholder"
+                  value={filters.search}
+                  onChange={(e) => handleFilterChange("search", e.target.value)}
+                  placeholder="Search by customer name..."
+                />
+              </div>
+              <Button
+                variant="solid"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2"
+              >
+                <FunnelIcon className="w-4 h-4" />
+                {showFilters ? "Hide Filters" : "Show Filters"}
+              </Button>
+              <Button
+                variant="solid"
+                onClick={() => navigate("/customers/add")}
+                className="flex items-center gap-2"
+              >
+                <PlusCircleIcon className="w-6 h-6" />
+                Add Customer
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Advanced Filters */}
         {showFilters && (
           <div>
             <Divider />
             <div className="px-6 py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 <TextInput
                   label="Start Date"
                   labelType="outside"
                   type="date"
                   value={filters.startDate}
+                  max={maxDate}
                   onChange={(e) =>
                     handleFilterChange("startDate", e.target.value)
                   }
@@ -227,6 +188,7 @@ const CustomerPage = () => {
                   labelType="outside"
                   type="date"
                   value={filters.endDate}
+                  max={maxDate}
                   onChange={(e) =>
                     handleFilterChange("endDate", e.target.value)
                   }
@@ -269,7 +231,6 @@ const CustomerPage = () => {
                   className="mb-0"
                 />
 
-                {/* Sort Options */}
                 <SelectInput
                   id="sort-by"
                   name="sortBy"
@@ -300,8 +261,12 @@ const CustomerPage = () => {
                   className="mb-0"
                 />
 
-                <div className="flex justify-center md:justify-start items-center mt-3">
-                  <Button variant="outline" onClick={handleResetFilters}>
+                <div className="col-span-2 sm:col-span-3 lg:col-span-4 flex justify-center sm:justify-start items-center mt-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleResetFilters}
+                    className="w-full sm:w-auto"
+                  >
                     Reset Filters
                   </Button>
                 </div>
@@ -310,16 +275,12 @@ const CustomerPage = () => {
           </div>
         )}
 
-        {/* Data Table */}
-        <DataTable
-          columns={columns}
-          data={customers}
+        <CustomerTable
+          customers={customers}
           loading={loading}
-          emptyMessage="No customers found. Try adjusting your filters."
           pagination={pagination}
           onPageChange={(page) => handleFilterChange("page", page)}
           onPerPageChange={(perPage) => handleFilterChange("perPage", perPage)}
-          showPagination={true}
         />
       </div>
     </MainLayout>

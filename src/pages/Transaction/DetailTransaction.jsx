@@ -34,14 +34,14 @@ const DetailTransactionPage = () => {
       dispatch(getTransactionDetail(referenceNo));
     }
 
-    // Cleanup on unmount
+    
     return () => {
       dispatch(clearTransactionDetail());
       dispatch(clearError());
     };
   }, [dispatch, referenceNo]);
 
-  // Table columns for items
+  
   const itemColumns = [
     {
       key: "productName",
@@ -143,7 +143,7 @@ const DetailTransactionPage = () => {
   return (
     <MainLayout title="Transaction Detail" breadcrumbItems={breadcrumbItems}>
       <div className="space-y-6">
-        {/* Header Information */}
+        
         <Card variant="outline" className="p-6">
           <div className="mb-6">
             <div>
@@ -157,7 +157,7 @@ const DetailTransactionPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Customer Information */}
+            
             <div>
               <Text
                 variant="caption"
@@ -174,7 +174,7 @@ const DetailTransactionPage = () => {
               </Text>
             </div>
 
-            {/* Sales Information */}
+            
             <div>
               <Text
                 variant="caption"
@@ -186,7 +186,7 @@ const DetailTransactionPage = () => {
               <Text variant="body">{transactionDetail.sales || "-"}</Text>
             </div>
 
-            {/* Order Date */}
+            
             <div>
               <Text
                 variant="caption"
@@ -200,7 +200,7 @@ const DetailTransactionPage = () => {
               </Text>
             </div>
 
-            {/* Due Date */}
+            
             <div>
               <Text
                 variant="caption"
@@ -214,7 +214,7 @@ const DetailTransactionPage = () => {
               </Text>
             </div>
 
-            {/* Paid Date */}
+            
             <div>
               <Text
                 variant="caption"
@@ -232,7 +232,7 @@ const DetailTransactionPage = () => {
           </div>
         </Card>
 
-        {/* Items List */}
+        
         <Card variant="outline" className="p-6">
           <Text variant="subheading" className="mb-4">
             Order Items
@@ -247,7 +247,7 @@ const DetailTransactionPage = () => {
           />
         </Card>
 
-        {/* Summary */}
+
         <Card variant="outline" className="p-6">
           <Text variant="subheading" className="mb-4">
             Order Summary

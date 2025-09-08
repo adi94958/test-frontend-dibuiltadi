@@ -1,4 +1,4 @@
-// pages/auth/LoginPage.jsx
+ 
 import { useNavigate } from "react-router-dom";
 import { Loading, Text, Button, TextInput } from "../../components/Elements";
 import AuthLayout from "../../components/Layouts/AuthLayout";
@@ -14,7 +14,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Setup formik dengan validasi
+  
   const formik = useFormik({
     initialValues: {
       phone: "",
@@ -56,11 +56,11 @@ const LoginPage = () => {
     },
   });
 
-  // Handle submit - lebih sederhana
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validasi semua field sekaligus
+    
     const errors = await formik.validateForm();
     formik.setTouched(
       {
@@ -70,7 +70,7 @@ const LoginPage = () => {
       false
     );
 
-    // Submit jika tidak ada error
+    
     if (Object.keys(errors).length === 0) {
       formik.handleSubmit(e);
     }
@@ -81,14 +81,14 @@ const LoginPage = () => {
       title="Welcome Back"
       subtitle="Sign in to continue your journey with us"
     >
-      {/* Header */}
+      
       <div className="text-center mb-8">
         <Text variant="heading">Login</Text>
       </div>
 
-      {/* Form */}
+      
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Input Phone */}
+        
         <TextInput
           name="phone"
           label="Phone Number"
@@ -99,7 +99,7 @@ const LoginPage = () => {
           touched={formik.touched.phone}
         />
 
-        {/* Input Password */}
+        
         <TextInput
           name="password"
           label="Password"
@@ -110,7 +110,7 @@ const LoginPage = () => {
           touched={formik.touched.password}
         />
 
-        {/* Submit Button */}
+        
         <Button
           type="submit"
           size="lg"
@@ -131,7 +131,7 @@ const LoginPage = () => {
         </Button>
       </form>
 
-      {/* Link Sign Up */}
+
       <div className="text-center mt-8">
         <p className="text-gray-600">
           Create an account{" "}

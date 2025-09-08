@@ -10,7 +10,6 @@ const ProfileAvatar = ({
 }) => {
   const [imageError, setImageError] = useState(false);
 
-  // Size configurations
   const sizes = {
     xs: "w-6 h-6",
     sm: "w-8 h-8",
@@ -29,7 +28,6 @@ const ProfileAvatar = ({
     "2xl": "w-10 h-10",
   };
 
-  // Jika tidak ada gambar atau error, tampilkan fallback
   if (!profileImage || imageError) {
     return (
       <div

@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { transactionService } from "../../services/apis/transactionService";
 
-// Async Thunk for get all transactions
 export const getAllTransactions = createAsyncThunk(
   "transaction/getAllTransactions",
   async (params = {}, { rejectWithValue }) => {
@@ -9,17 +8,16 @@ export const getAllTransactions = createAsyncThunk(
       const response = await transactionService.getAll(params);
       return response;
     } catch (err) {
-      console.error('API Error - getAllTransactions:', err);
+      console.error("API Error - getAllTransactions:", err);
       if (err.response && err.response.data) {
         return rejectWithValue(err.response.data);
       } else {
-        return rejectWithValue(err.message || 'Network error');
+        return rejectWithValue(err.message || "Network error");
       }
     }
   }
 );
 
-// Async Thunk for get transaction detail
 export const getTransactionDetail = createAsyncThunk(
   "transaction/getTransactionDetail",
   async (referenceNo, { rejectWithValue }) => {
@@ -66,18 +64,16 @@ const transactionSlice = createSlice({
       })
       .addCase(getAllTransactions.fulfilled, (state, action) => {
         state.loading = false;
-        // Response structure: { responseCode, responseMessage, items }
         const response = action.payload;
-        
         if (response && response.items) {
           state.transactions = response.items;
-          
-          // Since API doesn't return pagination info, calculate it
           state.pagination = {
             currentPage: action.meta.arg?.page || 1,
-            lastPage: Math.ceil(response.total / (action.meta.arg?.perPage || 10)),
+            lastPage: Math.ceil(
+              response.total / (action.meta.arg?.perPage || 10)
+            ),
             perPage: action.meta.arg?.perPage || 10,
-            total: response.total, // Use total from API response
+            total: response.total,
           };
         } else {
           state.transactions = [];

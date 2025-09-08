@@ -24,7 +24,7 @@ const EditCustomer = () => {
     (state) => state.customer
   );
 
-  // Setup formik untuk edit customer
+  
   const formik = useFormik({
     initialValues: {
       name: customerDetail?.name || "",
@@ -37,7 +37,7 @@ const EditCustomer = () => {
     validationSchema: customerSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      // Filter empty optional fields
+      
       const cleanData = Object.fromEntries(
         Object.entries(values).filter(
           ([key, value]) => key === "name" || (value && value.trim())
@@ -61,7 +61,7 @@ const EditCustomer = () => {
     },
   });
 
-  // Handle success update
+  
   useEffect(() => {
     if (updateSuccess) {
       Swal.fire({
@@ -76,25 +76,25 @@ const EditCustomer = () => {
     }
   }, [updateSuccess, message, navigate]);
 
-  // Fetch customer detail saat component mount
+  
   useEffect(() => {
     if (code) {
       dispatch(getCustomerDetail(code));
     }
 
-    // Cleanup saat component unmount
+    
     return () => {
       dispatch(clearCustomerDetail());
       dispatch(clearError());
     };
   }, [code, dispatch]);
 
-  // Handle cancel
+  
   const handleCancel = () => {
     navigate("/customers");
   };
 
-  // Handle submit dengan validasi
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -111,19 +111,19 @@ const EditCustomer = () => {
       false
     );
 
-    // Submit jika tidak ada error
+    
     if (Object.keys(errors).length === 0) {
       formik.handleSubmit(e);
     }
   };
 
-  // Breadcrumb items
+  
   const breadcrumbItems = [
     { label: "Customer Management", href: "/customers" },
     { label: "Edit Customer" },
   ];
 
-  // Loading state saat fetch detail
+  
   if (loading && !customerDetail) {
     return (
       <MainLayout
@@ -138,7 +138,7 @@ const EditCustomer = () => {
     );
   }
 
-  // Error state saat fetch detail
+  
   if (error && !customerDetail) {
     return (
       <MainLayout
@@ -170,7 +170,7 @@ const EditCustomer = () => {
         isSubmitting={loading}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Nama Customer - Required */}
+          
           <div>
             <TextInput
               name="name"
@@ -184,7 +184,7 @@ const EditCustomer = () => {
             />
           </div>
 
-          {/* Nomor Identitas - Optional */}
+          
           <div>
             <TextInput
               name="identityNo"
@@ -197,7 +197,7 @@ const EditCustomer = () => {
             />
           </div>
 
-          {/* NPWP - Optional */}
+          
           <div>
             <TextInput
               name="npwp"
@@ -210,7 +210,7 @@ const EditCustomer = () => {
             />
           </div>
 
-          {/* Email - Optional */}
+          
           <div>
             <TextInput
               name="email"
@@ -224,7 +224,7 @@ const EditCustomer = () => {
             />
           </div>
 
-          {/* Telepon - Optional */}
+          
           <div>
             <TextInput
               name="phone"
@@ -237,7 +237,7 @@ const EditCustomer = () => {
             />
           </div>
 
-          {/* Mobile Phone - Optional */}
+
           <div>
             <TextInput
               name="mobile_phone"

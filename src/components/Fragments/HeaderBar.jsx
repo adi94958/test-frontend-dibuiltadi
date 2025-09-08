@@ -38,7 +38,7 @@ const Header = memo(() => {
   const handleLogout = useCallback(() => {
     setIsDropdownOpen(false);
 
-    // SweetAlert confirmation
+    
     Swal.fire({
       title: "Logout Confirmation",
       text: "Are you sure you want to logout?",
@@ -50,7 +50,7 @@ const Header = memo(() => {
       cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Dispatch Redux logout
+        
         dispatch(logout());
 
         Swal.fire({
@@ -66,17 +66,17 @@ const Header = memo(() => {
   }, [dispatch, navigate]);
 
   const handleHamburgerClick = useCallback(() => {
-    // Hanya toggle mobile menu pada mobile, tidak ada collapse functionality
+    
     if (!isDesktop) {
       toggleMobileMenu();
     } else {
-      // Pada desktop, toggle collapse sidebar
+      
       toggleSidebar();
     }
   }, [isDesktop, toggleMobileMenu, toggleSidebar]);
 
   const handleOverlayClick = useCallback(() => {
-    // Tutup mobile menu ketika overlay diklik
+    
     if (isMobileMenuOpen && !isDesktop) {
       toggleMobileMenu();
     }
@@ -88,14 +88,11 @@ const Header = memo(() => {
         setIsDropdownOpen(false);
       }
     };
-    
     const handleResize = () => {
       setIsDesktop(window.innerWidth >= 1024);
     };
-    
     document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener("resize", handleResize);
-    
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       window.removeEventListener("resize", handleResize);
@@ -114,7 +111,7 @@ const Header = memo(() => {
         }`}
       >
         <div className="flex items-center justify-between h-full">
-          {/* Left side - Hamburger button */}
+          
           <div className="flex items-center">
             <button
               onClick={handleHamburgerClick}
@@ -129,7 +126,7 @@ const Header = memo(() => {
             </button>
           </div>
 
-        {/* Right side - User info and avatar */}
+        
         <div className="flex items-center space-x-3">
           <div className="text-right hidden md:block">
             <Text variant="body" color="dark" className="font-medium">
@@ -184,7 +181,7 @@ const Header = memo(() => {
       </div>
     </header>
     
-    {/* Mobile overlay background */}
+
     {isMobileMenuOpen && !isDesktop && (
       <div className="fixed inset-0 z-50 lg:hidden">
         <div

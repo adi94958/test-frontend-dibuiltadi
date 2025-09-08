@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { cityService } from "../../services/apis/cityService";
 
-// Async Thunk for get cities
 export const getCities = createAsyncThunk(
   "customer/getCities",
   async (_, { rejectWithValue }) => {
@@ -32,7 +31,6 @@ const citySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Get cities cases
       .addCase(getCities.pending, (state) => {
         state.loading = true;
         state.error = null;

@@ -20,34 +20,33 @@ export const customerService = {
     }
   },
 
-  updateCustomer: async (code, customerData) => {
-    try {
-      const response = await axiosInstance.put(`/api/v1/customers/${code}`, customerData);
-      return handleApiResponse(response);
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-};
-
-export const customerListService = {
-  getCustomerList: async () => {
-    try {
-      const response = await axiosInstance.get("/api/v1/customers/list");
-      return handleApiResponse(response);
-    } catch (error) {
-      handleApiError(error);
-    }
-  },
-};
-
-export const storeCustomer = {
   storeCustomer: async (customerData) => {
     try {
       const response = await axiosInstance.post(
         "/api/v1/customers",
         customerData
       );
+      return handleApiResponse(response);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  updateCustomer: async (code, customerData) => {
+    try {
+      const response = await axiosInstance.put(
+        `/api/v1/customers/${code}`,
+        customerData
+      );
+      return handleApiResponse(response);
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  getCustomerList: async () => {
+    try {
+      const response = await axiosInstance.get("/api/v1/customers/list");
       return handleApiResponse(response);
     } catch (error) {
       handleApiError(error);

@@ -33,7 +33,7 @@ const DetailCustomerPage = () => {
   }, [dispatch, code]);
 
   const breadcrumbItems = [
-    { label: "Customer Management", href: "/customer" },
+    { label: "Customer Management", href: "/customers" },
     { label: `Detail Customer`, href: `/customer/detail/${code}` },
   ];
 

@@ -1,15 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  customerService,
-  customerListService,
-} from "../../services/apis/customerService";
+import { customerService } from "../../services/apis/customerService";
 
-// Async Thunk for get customer list (simple list)
 export const getCustomerList = createAsyncThunk(
   "customer/getCustomerList",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await customerListService.getCustomerList();
+      const response = await customerService.getCustomerList();
       return response;
     } catch (err) {
       if (err.response && err.response.data) {
@@ -21,7 +17,6 @@ export const getCustomerList = createAsyncThunk(
   }
 );
 
-// Async Thunk for get all customers with pagination
 export const getAllCustomers = createAsyncThunk(
   "customer/getAllCustomers",
   async (params = {}, { rejectWithValue }) => {
@@ -38,7 +33,6 @@ export const getAllCustomers = createAsyncThunk(
   }
 );
 
-// Async Thunk for get customer detail
 export const getCustomerDetail = createAsyncThunk(
   "customer/getCustomerDetail",
   async (id, { rejectWithValue }) => {
@@ -55,7 +49,6 @@ export const getCustomerDetail = createAsyncThunk(
   }
 );
 
-// Async Thunk fot store customer
 export const storeCustomer = createAsyncThunk(
   "customer/storeCustomer",
   async (customerData, { rejectWithValue }) => {
@@ -72,7 +65,6 @@ export const storeCustomer = createAsyncThunk(
   }
 );
 
-// Async Thunk for update customer
 export const updateCustomer = createAsyncThunk(
   "customer/updateCustomer",
   async ({ code, customerData }, { rejectWithValue }) => {
@@ -137,7 +129,6 @@ const customerSlice = createSlice({
         if (response && response.items) {
           state.customers = response.items;
 
-          // Since API doesn't return pagination info, calculate it
           state.pagination = {
             currentPage: action.meta.arg?.page || 1,
             lastPage: Math.ceil(
