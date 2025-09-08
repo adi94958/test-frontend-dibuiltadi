@@ -24,7 +24,6 @@ const EditCustomer = () => {
     (state) => state.customer
   );
 
-  
   const formik = useFormik({
     initialValues: {
       name: customerDetail?.name || "",
@@ -37,11 +36,15 @@ const EditCustomer = () => {
     validationSchema: customerSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      
       const cleanData = Object.fromEntries(
-        Object.entries(values).filter(
-          ([key, value]) => key === "name" || (value && value.trim())
-        )
+        Object.entries(values)
+          .filter(([key, value]) => key === "name" || (value && value.trim()))
+          .map(([key, value]) => [
+            key,
+            key === "name" && typeof value === "string"
+              ? value.toUpperCase()
+              : value,
+          ])
       );
 
       try {
@@ -61,7 +64,6 @@ const EditCustomer = () => {
     },
   });
 
-  
   useEffect(() => {
     if (updateSuccess) {
       Swal.fire({
@@ -76,25 +78,21 @@ const EditCustomer = () => {
     }
   }, [updateSuccess, message, navigate]);
 
-  
   useEffect(() => {
     if (code) {
       dispatch(getCustomerDetail(code));
     }
 
-    
     return () => {
       dispatch(clearCustomerDetail());
       dispatch(clearError());
     };
   }, [code, dispatch]);
 
-  
   const handleCancel = () => {
     navigate("/customers");
   };
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -111,19 +109,16 @@ const EditCustomer = () => {
       false
     );
 
-    
     if (Object.keys(errors).length === 0) {
       formik.handleSubmit(e);
     }
   };
 
-  
   const breadcrumbItems = [
     { label: "Customer Management", href: "/customers" },
     { label: "Edit Customer" },
   ];
 
-  
   if (loading && !customerDetail) {
     return (
       <MainLayout
@@ -138,7 +133,6 @@ const EditCustomer = () => {
     );
   }
 
-  
   if (error && !customerDetail) {
     return (
       <MainLayout
@@ -170,7 +164,6 @@ const EditCustomer = () => {
         isSubmitting={loading}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          
           <div>
             <TextInput
               name="name"
@@ -184,7 +177,6 @@ const EditCustomer = () => {
             />
           </div>
 
-          
           <div>
             <TextInput
               name="identityNo"
@@ -197,7 +189,6 @@ const EditCustomer = () => {
             />
           </div>
 
-          
           <div>
             <TextInput
               name="npwp"
@@ -210,7 +201,6 @@ const EditCustomer = () => {
             />
           </div>
 
-          
           <div>
             <TextInput
               name="email"
@@ -224,7 +214,6 @@ const EditCustomer = () => {
             />
           </div>
 
-          
           <div>
             <TextInput
               name="phone"
@@ -236,7 +225,6 @@ const EditCustomer = () => {
               touched={formik.touched.phone}
             />
           </div>
-
 
           <div>
             <TextInput

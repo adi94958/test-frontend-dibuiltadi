@@ -1,4 +1,3 @@
- 
 import { useNavigate } from "react-router-dom";
 import { Loading, Button, TextInput } from "../../components/Elements";
 import AuthLayout from "../../components/Layouts/AuthLayout";
@@ -14,7 +13,6 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -55,11 +53,9 @@ const RegisterPage = () => {
     },
   });
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
     const errors = await formik.validateForm();
     formik.setTouched(
       {
@@ -72,7 +68,6 @@ const RegisterPage = () => {
       false
     );
 
-    
     if (Object.keys(errors).length === 0) {
       formik.handleSubmit(e);
     }
@@ -83,14 +78,11 @@ const RegisterPage = () => {
       title="Join Us Today"
       subtitle="Create your account and start your amazing journey"
     >
-      
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900">Register</h2>
       </div>
 
-      
       <form onSubmit={handleSubmit} className="space-y-6">
-        
         <TextInput
           name="name"
           label="Full Name"
@@ -101,7 +93,6 @@ const RegisterPage = () => {
           touched={formik.touched.name}
         />
 
-        
         <TextInput
           name="phone"
           label="Phone Number"
@@ -112,7 +103,6 @@ const RegisterPage = () => {
           touched={formik.touched.phone}
         />
 
-        
         <TextInput
           name="email"
           label="Email Address"
@@ -123,7 +113,6 @@ const RegisterPage = () => {
           touched={formik.touched.email}
         />
 
-        
         <TextInput
           name="address"
           label="Address"
@@ -134,7 +123,6 @@ const RegisterPage = () => {
           touched={formik.touched.address}
         />
 
-        
         <TextInput
           name="password"
           label="Password"
@@ -145,7 +133,6 @@ const RegisterPage = () => {
           touched={formik.touched.password}
         />
 
-        
         <Button
           type="submit"
           size="lg"
@@ -165,7 +152,6 @@ const RegisterPage = () => {
           )}
         </Button>
       </form>
-
 
       <div className="text-center mt-8">
         <p className="text-gray-600">

@@ -40,17 +40,24 @@ const AddCustomer = () => {
     validationSchema: addCustomerSchema,
     onSubmit: async (values) => {
       const cleanData = Object.fromEntries(
-        Object.entries(values).filter(
-          ([key, value]) =>
-            [
-              "name",
-              "provinceCode",
-              "cityCode",
-              "address",
-              "companyType",
-            ].includes(key) ||
-            (value && value.trim())
-        )
+        Object.entries(values)
+          .filter(
+            ([key, value]) =>
+              [
+                "name",
+                "provinceCode",
+                "cityCode",
+                "address",
+                "companyType",
+              ].includes(key) ||
+              (value && value.trim())
+          )
+          .map(([key, value]) => [
+            key,
+            key === "name" && typeof value === "string"
+              ? value.toUpperCase()
+              : value,
+          ])
       );
       try {
         await dispatch(storeCustomer(cleanData)).unwrap();
